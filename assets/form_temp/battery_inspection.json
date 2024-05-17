@@ -1,0 +1,70 @@
+{
+    "Title": "Battery Inspection Sheet",
+    "GeneralInfo": {
+        "Name": "General Information",
+        "EquipmentNumber": {
+            "Label": "Equipment Number",
+            "Type": "dropdown",
+            "DbTableName": "Battery",
+            "DbColumnName": "EquipmentNumber",
+            "Unit": null,
+            "Required": true
+        },
+        "WorkPackNumber": {
+            "Label": "Work Pack Number",
+            "Type": "text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "BatteryType": {
+            "Label": "Battery Type",
+            "Type": "dropdown",
+            "DbTableName": "Battery",
+            "DbColumnName": "BatteryType",
+            "Unit": null,
+            "Required": true
+        },
+        "BatteryVoltage": {
+            "Label": "Battery Voltage",
+            "Type": "Number",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": "V",
+            "Required": true
+        },
+        "BatteryAh": {
+            "Label": "Battery amp hour",
+            "Type": "Number",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": "Ah",
+            "Required": true
+        },
+        "Description": {
+            "Label": "Description",
+            "Type": "text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": false
+        },
+        "InspectionDate": {
+            "Label": "Inspection Date",
+            "Type": "date",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "Inspector": {
+            "Label": "Inspector",
+            "Type": "text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        }
+    }
+}

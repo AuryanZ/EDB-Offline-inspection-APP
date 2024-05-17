@@ -1,3 +1,4 @@
+import 'package:app/src/widgets/home/inspect_selection.widget.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,13 +11,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  final buttonNames = [
+    "Asset Amendment Form",
+    "Defect Report (Emergent Sheet)",
+    "Job Sheet (UAT)",
+    "Battery Inspection",
+    "Cable Inspection",
+    "Ground Mount TX Inspection",
+    "IED Inspection",
+    "Pole Inspection",
+    "Pillar Box Inspection",
+    "SWER Sub Inspection",
+    "Voltage Reg Inspection",
+    "Zone Sub Inspection",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -25,25 +33,22 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+      body: SafeArea(
+        top: true,
+        child: LayoutBuilder(builder:
+            (BuildContext context, BoxConstraints viewportConstraints) {
+          return SingleChildScrollView(
+            // padding: const EdgeInsets.all(24),
+            child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: viewportConstraints.maxHeight,
+                ),
+                child: InspectionSelection(
+                  buttonNames: buttonNames,
+                )),
+          );
+        }),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
