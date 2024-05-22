@@ -1,3 +1,6 @@
+import 'package:app/src/widgets/inspection/check_box_opt.widget.dart';
+import 'package:app/src/widgets/inspection/drop_down_opt.widget.dart';
+import 'package:app/src/widgets/inspection/input_text_opt.widget.dart';
 import 'package:flutter/material.dart';
 
 class EntryContainer extends StatelessWidget {
@@ -5,100 +8,155 @@ class EntryContainer extends StatelessWidget {
 
   const EntryContainer({super.key, required this.entry});
 
-  @override
-  Widget build(BuildContext context) {
-    Map<String, dynamic> data = entry.value;
-    String subTitle = entry.value['Name'];
-    data.remove('Name');
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      margin: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
-      ),
-      child: Column(
-        children: [
-          Text(
-            subTitle,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-          ),
-          for (int i = 0; i < data.entries.length; i += 2)
-            Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  // child: Align(
-                  // alignment: Alignment.centerLeft,
-                  child: buildFieldText(data.entries.elementAt(i)),
-                  // ),
-                ),
-                if (i + 1 < data.entries.length)
-                  Expanded(
-                    flex: 1,
-                    // child: Align(
-                    // alignment: Alignment.centerLeft,
-                    child: buildFieldText(data.entries.elementAt(i + 1)),
-                    // ),
-                  ),
-              ],
-            ),
-        ],
-      ),
-    );
-  }
-
   Widget buildFieldText(MapEntry<String, dynamic> field) {
-    //   FieldData fieldData = FieldData.fromJson(jsonDecode(field.value.to));
-    //   return Text("key: " + fieldData.label);
-    // }
     Map<String, dynamic> fieldData = field.value;
     // return Text(fieldData['Label']);
-    return Container(
-        padding: const EdgeInsets.all(8.0),
-        margin: const EdgeInsets.all(8.0),
-        child: Row(children: [
-          Text(
-            fieldData['Label'],
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+    if (fieldData['Type'] == 'Dropdown') {
+      return Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          SizedBox(
+            width: 200,
+            child: Text(
+              fieldData['Label'],
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
           ),
-          const SizedBox(width: 20),
+          // const Spacer(),
+          // const Expanded(
+          // child:
           const DropdownMenuExample(),
-          // Text(
-          //   fieldData['Unit'] ?? "No Unit",
-          //   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           // ),
-          // Text(
-          //   fieldData['Required'] ? "Required" : "Not Required",
-          //   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          // ),
-        ]));
+        ],
+      );
+      // DropdownMenuExample();
+    } else if (fieldData['Type'] == "Number") {
+      return Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            width: 200,
+            child: Text(
+              fieldData['Label'],
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+          ),
+          InputBoxOpt(
+            label: fieldData['Label'],
+            typeInput: 'number',
+          )
+        ],
+      );
+    } else if (fieldData['Type'] == 'Text') {
+      return Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            width: 200,
+            child: Text(
+              fieldData['Label'],
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+          ),
+          InputBoxOpt(
+            label: fieldData['Label'],
+            typeInput: 'text',
+          )
+          // )
+        ],
+      );
+      // return
+    } else if (fieldData['Type'] == 'Date') {
+      return TextFormField(
+        decoration: const InputDecoration(labelText: "todo: Date Picker "),
+      );
+    } else if (fieldData['Type'] == 'CheckBox') {
+      return CheckBoxOpt(titleTxt: fieldData['Label']);
+    } else {
+      return const Text("Unknown Field Type");
+    }
   }
-}
 
-class DropdownMenuExample extends StatefulWidget {
-  const DropdownMenuExample({super.key});
-
-  @override
-  State<DropdownMenuExample> createState() => _DropdownMenuExampleState();
-}
-
-class _DropdownMenuExampleState extends State<DropdownMenuExample> {
   @override
   Widget build(BuildContext context) {
-    const List<String> list = <String>['One', 'Two', 'Three', 'Four'];
-    String dropdownValue = list.first;
-
-    return DropdownMenu<String>(
-      initialSelection: list.first,
-      onSelected: (String? value) {
-        // This is called when the user selects an item.
-        setState(() {
-          dropdownValue = value!;
-        });
-      },
-      dropdownMenuEntries: list.map<DropdownMenuEntry<String>>((String value) {
-        return DropdownMenuEntry<String>(value: value, label: value);
-      }).toList(),
-    );
+    // Map<String, dynamic> data = entry.value;
+    Map<String, dynamic> data = Map<String, dynamic>.from(entry.value);
+    final subTitle = data['Name'];
+    data.remove('Name');
+    if (data.keys.first == "Comments") {
+      return Container(
+          padding: const EdgeInsets.all(8.0),
+          margin: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black),
+          ),
+          child: Column(
+            children: [
+              const Text(
+                "COMMENTS",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.85,
+                height: 200,
+                child: const TextField(
+                  maxLines: null, // Set this
+                  expands: true, // and this
+                  keyboardType: TextInputType.multiline,
+                  decoration: InputDecoration(
+                    labelText: "COMMENT",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              )
+            ],
+          ));
+    } else {
+      return Container(
+        padding: const EdgeInsets.all(8.0),
+        margin: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.black),
+        ),
+        child: Column(
+          children: [
+            Text(
+              subTitle,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+            ),
+            for (int i = 0; i < data.entries.length; i += 2)
+              Wrap(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    margin: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      // flex: 1,
+                      child: buildFieldText(data.entries.elementAt(i)),
+                    ),
+                  ),
+                  if (i + 1 < data.entries.length)
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      margin: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        child: buildFieldText(data.entries.elementAt(i + 1)),
+                      ),
+                    ),
+                  if (i + 1 == data.entries.length)
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      color: Colors.transparent,
+                    ),
+                ],
+              ),
+            // Spacer(),
+          ],
+        ),
+      );
+    }
   }
 }

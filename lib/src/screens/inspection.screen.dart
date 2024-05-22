@@ -55,8 +55,12 @@ class _InspectionFormScreen extends State<InspectionFormScreen> {
                         Center(
                           child: Text(
                             formTitle,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 40),
+                            // style: const TextStyle(
+                            //     fontWeight: FontWeight.bold, fontSize: 40),
+
+                            style: DefaultTextStyle.of(context)
+                                .style
+                                .apply(fontSizeFactor: 3.0, fontWeightDelta: 2),
                           ),
                         ),
                         Column(children: [

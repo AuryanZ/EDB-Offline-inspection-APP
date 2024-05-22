@@ -4,7 +4,7 @@
         "Name": "General Information",
         "EquipmentNumber": {
             "Label": "Equipment Number",
-            "Type": "dropdown",
+            "Type": "Text",
             "DbTableName": "Battery",
             "DbColumnName": "EquipmentNumber",
             "Unit": null,
@@ -12,7 +12,7 @@
         },
         "WorkPackNumber": {
             "Label": "Work Pack Number",
-            "Type": "text",
+            "Type": "Text",
             "DbTableName": null,
             "DbColumnName": null,
             "Unit": null,
@@ -20,7 +20,7 @@
         },
         "BatteryType": {
             "Label": "Battery Type",
-            "Type": "dropdown",
+            "Type": "Text",
             "DbTableName": "Battery",
             "DbColumnName": "BatteryType",
             "Unit": null,
@@ -44,7 +44,7 @@
         },
         "Description": {
             "Label": "Description",
-            "Type": "text",
+            "Type": "Text",
             "DbTableName": null,
             "DbColumnName": null,
             "Unit": null,
@@ -52,7 +52,7 @@
         },
         "InspectionDate": {
             "Label": "Inspection Date",
-            "Type": "date",
+            "Type": "Date",
             "DbTableName": null,
             "DbColumnName": null,
             "Unit": null,
@@ -60,7 +60,77 @@
         },
         "Inspector": {
             "Label": "Inspector",
-            "Type": "text",
+            "Type": "Text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        }
+    },
+    "Inspection": {
+        "Name": "Inspection",
+        "Batteries and racks installed": {
+            "Label": "Batteries and racks installed",
+            "Type": "CheckBox",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "checked for proper mechanical installation": {
+            "Label": "checked for proper mechanical installation",
+            "Type": "CheckBox",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "check connections including polarity": {
+            "Label": "check connections including polarity",
+            "Type": "CheckBox",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "Charger operates in accordance with manufacturer's recommendations": {
+            "Label": "Charger operates in accordance with manufacturer's recommendations",
+            "Type": "CheckBox",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "Current output, voltage and operation of control components checked": {
+            "Label": "Current output, voltage and operation of control components checked",
+            "Type": "CheckBox",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "Batteries, battery racks and charges cleaned. Terminals clean free of corrosion": {
+            "Label": "Batteries, battery racks and charges cleaned. Terminals clean free of corrosion",
+            "Type": "CheckBox",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "BatteryCondition": {
+            "Label": "Battery Condition",
+            "Type": "Dropdown",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        }
+    },
+    "Comments": {
+        "Name": "Comments",
+        "Comments": {
+            "Label": "Comments",
+            "Type": "Comment",
             "DbTableName": null,
             "DbColumnName": null,
             "Unit": null,
