@@ -1,23 +1,34 @@
 import 'package:flutter/material.dart';
 
 class DropdownMenuExample extends StatefulWidget {
-  const DropdownMenuExample({super.key});
+  final List<String> dropdownOpt;
+  final ValueChanged<String?> onChanged;
+
+  const DropdownMenuExample({
+    super.key,
+    required this.dropdownOpt,
+    required this.onChanged,
+  });
 
   @override
   State<DropdownMenuExample> createState() => _DropdownMenuExampleState();
 }
 
 class _DropdownMenuExampleState extends State<DropdownMenuExample> {
+  String? selectedValue;
+
   @override
   Widget build(BuildContext context) {
-    const List<String> list = <String>['One', 'Two', 'Three', 'Four'];
+    List<String> list = widget.dropdownOpt;
 
     return DropdownMenu<String>(
       width: MediaQuery.of(context).size.width * 0.25,
-      // width: 300,
-      initialSelection: list.first,
+      initialSelection: selectedValue,
       onSelected: (String? value) {
-        setState(() {});
+        setState(() {
+          selectedValue = value;
+        });
+        widget.onChanged(value);
       },
       dropdownMenuEntries: list.map<DropdownMenuEntry<String>>((String value) {
         return DropdownMenuEntry<String>(value: value, label: value);
