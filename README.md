@@ -23,6 +23,24 @@ samples, guidance on mobile development, and a full API reference.
 |  |  |-Alert (String, Section alert message, it will display on top of the section under the label)  
 |  |  |-Hint  (String, Section hint message, it will display a question icon on top of the section next the alert)  
 
+├── src
+│   ├── controller
+│   │   ├── **/*.css
+│   ├── views
+│   ├── model
+│   ├── index.js
+├── public
+│   ├── css
+│   │   ├── **/*.css
+│   ├── images
+│   ├── js
+│   ├── index.html
+├── dist (or build
+├── node_modules
+├── package.json
+├── package-lock.json
+└── .gitignore
+
 ## Error Code:
 #### \#101: Check form template section type.  
 ```
