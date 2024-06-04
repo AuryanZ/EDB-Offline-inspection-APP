@@ -49,7 +49,7 @@
         },
         "Description": {
             "Label": "Description",
-            "Type": "Tex",
+            "Type": "Text",
             "DbTableName": null,
             "DbColumnName": null,
             "Unit": null,

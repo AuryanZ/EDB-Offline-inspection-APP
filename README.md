@@ -16,7 +16,7 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 ## Template Structure:
-```
+```json
 {
     "Title":"Form Title",// title of the form template, will display on top of the form.
     "FirstSection":{
