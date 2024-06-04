@@ -20,19 +20,37 @@ class _DropdownMenuExampleState extends State<DropdownMenuExample> {
   @override
   Widget build(BuildContext context) {
     List<String> list = widget.dropdownOpt;
-
-    return DropdownMenu<String>(
-      width: MediaQuery.of(context).size.width * 0.25,
-      initialSelection: selectedValue,
-      onSelected: (String? value) {
-        setState(() {
-          selectedValue = value;
-        });
-        widget.onChanged(value);
-      },
-      dropdownMenuEntries: list.map<DropdownMenuEntry<String>>((String value) {
-        return DropdownMenuEntry<String>(value: value, label: value);
-      }).toList(),
-    );
+    return Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            top: BorderSide(),
+            left: BorderSide(),
+            right: BorderSide(),
+            bottom: BorderSide(),
+          ),
+        ),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.4,
+          child: DropdownButton<String>(
+            value: selectedValue,
+            isExpanded: true,
+            alignment: Alignment.centerRight,
+            underline: Container(
+              height: 2,
+            ),
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedValue = newValue;
+              });
+              widget.onChanged(newValue);
+            },
+            items: list.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+        ));
   }
 }

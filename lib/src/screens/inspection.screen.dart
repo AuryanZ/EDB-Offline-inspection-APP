@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
-
 import 'package:app/src/widgets/inspection/form_generator.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +20,7 @@ class _InspectionFormScreen extends State<InspectionFormScreen> {
 
   Future<String> loadForm() async {
     final formName = "${widget.title.replaceAll(" ", "_").toLowerCase()}.json";
+    // print(formName);
     try {
       return await rootBundle.loadString('assets/form_temp/$formName');
     } catch (e) {

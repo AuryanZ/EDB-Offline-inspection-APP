@@ -76,9 +76,7 @@ class _DatePickerExampleState extends State<DatePickerExample>
           _restorableDatePickerRouteFuture.present();
         },
         child: Text(
-          _selectedDate.value == null
-              ? 'Open Date Picker'
-              : 'Selected: ${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}',
+          'Selected: ${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}',
         ),
       ),
     );

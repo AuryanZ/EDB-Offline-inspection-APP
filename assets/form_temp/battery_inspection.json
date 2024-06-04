@@ -1,7 +1,12 @@
 {
     "Title": "Battery Inspection Sheet",
     "GeneralInfo": {
-        "Name": "General Information",
+        "Name": {
+            "Label": "General Information",
+            "Alert": "",
+            "Hint": "",
+            "SectionView": "FormView"
+        },
         "EquipmentNumber": {
             "Label": "Equipment Number",
             "Type": "Text",
@@ -76,7 +81,12 @@
         }
     },
     "Inspection": {
-        "Name": "Inspection",
+        "Name": {
+            "Label": "Inspection",
+            "Alert": "",
+            "Hint": "",
+            "SectionView": "FormView"
+        },
         "Batteries and racks installed": {
             "Label": "Batteries and racks installed",
             "Type": "CheckBox",
@@ -140,7 +150,12 @@
         }
     },
     "Comments": {
-        "Name": "Comments",
+        "Name": {
+            "Label": "Comments",
+            "Alert": "",
+            "Hint": "",
+            "SectionView": "FormView"
+        },
         "Comments": {
             "Label": "Comments",
             "Type": "Comment",

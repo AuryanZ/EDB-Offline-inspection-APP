@@ -1,0 +1,316 @@
+{
+    "Title": "Pillar Box Inspection",
+    "GeneralInfo": {
+        "Name": {
+            "Label": "General Information",
+            "Alert": "",
+            "Hint": "",
+            "SectionView": "FormView"
+        },
+        "Local_ID": {
+            "Label": "Service/Pillar Box Number",
+            "Type": "Dropdown",
+            "Options": [
+                ""
+            ],
+            "DbTableName": "PillarBox",
+            "DbColumnName": "PillarBoxID",
+            "Unit": null,
+            "Required": true
+        },
+        "Operations_Area": {
+            "Label": "Area Of Inspection",
+            "Type": "Text",
+            "DbTableName": "PillarBox",
+            "DbColumnName": "Location",
+            "Unit": null,
+            "Required": true
+        },
+        "Street_No": {
+            "Label": "Property Number",
+            "Type": "Text",
+            "DbTableName": "PillarBox",
+            "DbColumnName": "StreetNo",
+            "Unit": null,
+            "Required": true
+        },
+        "Street Name": {
+            "Label": "Street Name",
+            "Type": "Text",
+            "DbTableName": "PillarBox",
+            "DbColumnName": "Street",
+            "Unit": null,
+            "Required": true
+        },
+        "Town": {
+            "Label": "Town",
+            "Type": "Text",
+            "DbTableName": "PillarBox",
+            "DbColumnName": "Town",
+            "Unit": null,
+            "Required": true
+        },
+        "Feeder": {
+            "Label": "Feeder",
+            "Type": "Text",
+            "DbTableName": "PillarBox",
+            "DbColumnName": "Feeder",
+            "Unit": null,
+            "Required": true
+        },
+        "GPS_N": {
+            "Label": "GPS N",
+            "Type": "Text",
+            "DbTableName": "PillarBox",
+            "DbColumnName": "GPSN",
+            "Unit": null,
+            "Required": true
+        },
+        "GPS_E": {
+            "Label": "GPS E",
+            "Type": "Text",
+            "DbTableName": "PillarBox",
+            "DbColumnName": "GPSE",
+            "Unit": null,
+            "Required": true
+        },
+        "Bonded_To": {
+            "Label": "Supply Transformer",
+            "Type": "Text",
+            "DbTableName": "PillarBox",
+            "DbColumnName": "BondedTo",
+            "Unit": null,
+            "Required": true
+        },
+        "AssetGroup": {
+            "Label": "Asset Group",
+            "Type": "Text",
+            "DbTableName": "PillarBox",
+            "DbColumnName": "AssetGroup",
+            "Unit": null,
+            "Required": true
+        },
+        "LV_BOX_Type": {
+            "Label": "Box Type Number",
+            "Type": "Text",
+            "DbTableName": "PillarBox",
+            "DbColumnName": "BoxTypeNo",
+            "Unit": null,
+            "Required": true
+        },
+        "Inspector": {
+            "Label": "Inspector",
+            "Type": "Text",
+            "DbTableName": "PillarBox",
+            "DbColumnName": "Inspector",
+            "Unit": null,
+            "Required": true
+        },
+        "Job number": {
+            "Label": "Job Number",
+            "Type": "Text",
+            "DbTableName": "PillarBox",
+            "DbColumnName": "JobNummber",
+            "Unit": null,
+            "Required": true
+        },
+        "Electrical Ticket Number": {
+            "Label": "Licence Number",
+            "Type": "Text",
+            "DbTableName": "PillarBox",
+            "DbColumnName": "LicenceNumber",
+            "Unit": null,
+            "Required": true
+        },
+        "Date": {
+            "Label": "Date",
+            "Type": "Date",
+            "DbTableName": "PillarBox",
+            "DbColumnName": "Date",
+            "Unit": null,
+            "Required": true
+        }
+    },
+    "SecurityInspection": {
+        "Name": {
+            "Label": "Security Inspection",
+            "Alert": "SCREWS/REVITS MUST NOT PIERCE THE BOX COVER",
+            "Hint": "",
+            "SectionView": "FormView"
+        },
+        "LV_Box_Construction": {
+            "Label": "Security",
+            "Type": "Dropdown",
+            "Options": [
+                "Padlock",
+                "Screws Only",
+                "Padlock & Screws"
+            ],
+            "DbTableName": "PillarBox",
+            "DbColumnName": "LV_Box_Construction",
+            "Unit": null,
+            "Required": true
+        },
+        "Hazard labeling": {
+            "Label": "Hazard Labeling",
+            "Type": "Dropdown",
+            "Options": [
+                "YES",
+                "NO"
+            ],
+            "DbTableName": "PillarBox",
+            "DbColumnName": "HazardLabeling",
+            "Unit": null,
+            "Required": true
+        },
+        "Voltage": {
+            "Label": "Voltage At Box",
+            "Type": "Dropdown",
+            "Options": [
+                "230V",
+                "400V"
+            ],
+            "DbTableName": "PillarBox",
+            "DbColumnName": "Voltage",
+            "Unit": null,
+            "Required": true
+        },
+        "Lv_box_numbers_of_fuses": {
+            "Label": "Number Of Fuses Holder Spaces",
+            "Type": "Dropdown",
+            "Options": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+            ],
+            "DbTableName": "PillarBox",
+            "DbColumnName": "Lv_box_numbers_of_fuses",
+            "Unit": null,
+            "Required": true
+        }
+    },
+    "LoopNCable": {
+        "Name": {
+            "Label": "Loop Test & Cable Size",
+            "Alert": "",
+            "Hint": "",
+            "SectionView": "TableView",
+            "Expandable": false,
+            "tableIndex": [
+                "Red",
+                "White",
+                "Blue"
+            ]
+        },
+        "Cable type": {
+            "Label": "Cable Type",
+            "Type": "Dropdown",
+            "Options": [
+                "Aluminum",
+                "Copper"
+            ],
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "Cable size": {
+            "Label": "Cable Size",
+            "Type": "Dropdown",
+            "Options": [
+                "16mm",
+                "25mm",
+                "35mm",
+                "50mm",
+                "70mm",
+                "95mm",
+                "105mm",
+                "120mm",
+                "185mm",
+                "240mm"
+            ],
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "Loop Impedance test results": {
+            "Label": "Test Result",
+            "Type": "Text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        }
+    },
+    "FusesNSupply": {
+        "Name": {
+            "Label": "Fuses and Supply",
+            "Alert": "",
+            "Hint": "",
+            "SectionView": "TableView",
+            "Expandable": true,
+            "tableIndex": []
+        },
+        "Fuse property supply number": {
+            "Label": "Fuse Property Number",
+            "Type": "Text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "Fuse size": {
+            "Label": "Fuse Size",
+            "Type": "Dropdown",
+            "Options": [
+                "32A",
+                "40A",
+                "63A",
+                "80A",
+                "100A",
+                "160A"
+            ],
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "Fuse phase": {
+            "Label": "Fuse Phase",
+            "Type": "Dropdown",
+            "Options": [
+                "Red",
+                "White",
+                "Blue"
+            ],
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        }
+    },
+    "Comments": {
+        "Name": {
+            "Label": "Comments",
+            "Alert": "",
+            "Hint": "",
+            "SectionView": "FormView"
+        },
+        "Comments": {
+            "Label": "Comments",
+            "Type": "Comment",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        }
+    }
+}
