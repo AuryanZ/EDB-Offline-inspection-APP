@@ -1,3 +1,4 @@
+import 'package:app/src/models/formControllers.model.dart';
 import 'package:app/src/widgets/inspection/check_box_opt.widget.dart';
 import 'package:app/src/widgets/inspection/date_time_picker_opt.widget.dart';
 import 'package:app/src/widgets/inspection/drop_down_opt.widget.dart';
@@ -6,18 +7,10 @@ import 'package:flutter/material.dart';
 
 class EntryContainer extends StatefulWidget {
   final MapEntry<String, dynamic> entry;
-  final Map<String, TextEditingController> textControllers;
-  final Map<String, String> dropdownValues;
-  final Map<String, DateTime> dateValues;
-  final Map<String, bool> checkBoxValues;
+  final FormControllers formController;
 
   const EntryContainer(
-      {super.key,
-      required this.entry,
-      required this.textControllers,
-      required this.dropdownValues,
-      required this.dateValues,
-      required this.checkBoxValues});
+      {super.key, required this.entry, required this.formController});
 
   @override
   State<EntryContainer> createState() => _EntryContainerState();
@@ -36,6 +29,18 @@ Widget buildContainer(Widget child, double widthSize) {
 
 class _EntryContainerState extends State<EntryContainer> {
   List<Map<String, dynamic>> rows = [];
+// Only use for Defualt Table Index Which is "tableIndex": []"
+  void addTableRow() {
+    setState(() {
+      final newRow = Map<String, dynamic>.from(widget.entry.value)
+        ..remove('Name');
+      final parentKey = widget.entry.key;
+      int newIndex = rows.length;
+      widget.formController
+          .addTableController(newRow, parentKey, newIndex.toString());
+      rows.add(newRow);
+    });
+  }
 
   @override
   void initState() {
@@ -43,10 +48,8 @@ class _EntryContainerState extends State<EntryContainer> {
     final sectionView = widget.entry.value['Name']['SectionView'];
     final tableIndex = widget.entry.value['Name']['tableIndex'];
     if (sectionView == "TableView") {
-      rows = [Map<String, dynamic>.from(widget.entry.value)..remove('Name')];
+      rows = [];
       final parentKey = widget.entry.key;
-
-      print(tableIndex);
 
       for (int i = 0; i <= tableIndex.length; i++) {
         var index = i.toString();
@@ -57,52 +60,9 @@ class _EntryContainerState extends State<EntryContainer> {
           index = tableIndex[i];
         }
         rows.add(Map<String, dynamic>.from(widget.entry.value)..remove('Name'));
-        print('index: $index');
-        rows[i].forEach((key, value) {
-          try {
-            // if (widget.textControllers.keys.contains('$parentKey-$key')) {
-            if (value["Type"] == "Text") {
-              final newKey = '$parentKey-$index-$key';
-              widget.textControllers.remove('$parentKey-$key');
-              widget.textControllers[newKey] = TextEditingController();
-              print('found');
-            } else if (widget.dropdownValues.keys.contains('$parentKey-$key')) {
-              final newKey = '$parentKey-$index-$key';
-              widget.dropdownValues.remove('$parentKey-$key');
-              widget.dropdownValues[newKey] = '';
-            } else {
-              print('$parentKey-$key not found');
-            }
-            // }
-          } catch (e) {
-            print(e);
-          }
-        });
+        widget.formController.addTableController(rows[i], parentKey, index);
       }
     }
-  }
-
-// Only use for Defualt Table Index Which is "tableIndex": []"
-  void addRow() {
-    setState(() {
-      final newRow = Map<String, dynamic>.from(widget.entry.value)
-        ..remove('Name');
-      final parentKey = widget.entry.key;
-      int newIndex = rows.length;
-
-      newRow.forEach((key, value) {
-        if (value['Type'] == 'Text' ||
-            value['Type'] == 'Number' ||
-            value['Type'] == 'Comment') {
-          widget.textControllers['$parentKey-$newIndex-$key'] =
-              TextEditingController();
-        } else if (value['Type'] == 'Dropdown') {
-          widget.dropdownValues['$parentKey-$newIndex-$key'] = '';
-        }
-      });
-
-      rows.add(newRow);
-    });
   }
 
   Widget buildFieldText(MapEntry<String, dynamic> field, String parentKey,
@@ -128,6 +88,7 @@ class _EntryContainerState extends State<EntryContainer> {
     switch (fieldType) {
       case 'Dropdown':
         final options = List<String>.from(fieldData['Options'] as List);
+        widget.formController.setDropdownValue('$parentKey-$fieldKey', '');
         return Center(
           child: Wrap(
             alignment: WrapAlignment.spaceBetween,
@@ -137,13 +98,16 @@ class _EntryContainerState extends State<EntryContainer> {
               DropdownMenuExample(
                 dropdownOpt: options,
                 onChanged: (value) {
-                  widget.dropdownValues['$parentKey-$fieldKey'] = value!;
+                  widget.formController
+                      .setDropdownValue('$parentKey-$fieldKey', value!);
                 },
               ),
             ],
           ),
         );
       case 'Number':
+        widget.formController
+            .setTextController('$parentKey-$fieldKey', TextEditingController());
         return Center(
           child: Wrap(
             alignment: WrapAlignment.spaceBetween,
@@ -153,12 +117,15 @@ class _EntryContainerState extends State<EntryContainer> {
                 label: fieldLabel,
                 unit: fieldData['Unit'],
                 typeInput: 'number',
-                controller: widget.textControllers['$parentKey-$fieldKey']!,
+                controller: widget.formController
+                    .getTextController('$parentKey-$fieldKey'),
               ),
             ],
           ),
         );
       case 'Text':
+        widget.formController
+            .setTextController('$parentKey-$fieldKey', TextEditingController());
         return Center(
           child: Wrap(
             alignment: WrapAlignment.spaceBetween,
@@ -168,18 +135,22 @@ class _EntryContainerState extends State<EntryContainer> {
                 label: fieldLabel,
                 unit: '',
                 typeInput: 'text',
-                controller: widget.textControllers['$parentKey-$fieldKey']!,
+                controller: widget.formController
+                    .getTextController('$parentKey-$fieldKey'),
               ),
             ],
           ),
         );
       case 'Comment':
+        widget.formController
+            .setTextController('$parentKey-$fieldKey', TextEditingController());
         return TextField(
           maxLines: null,
           expands: true,
           keyboardType: TextInputType.multiline,
           textAlign: TextAlign.start,
-          controller: widget.textControllers['$parentKey-$fieldKey']!,
+          controller:
+              widget.formController.getTextController('$parentKey-$fieldKey'),
           decoration: InputDecoration(
             alignLabelWithHint: true,
             labelText: fieldLabel,
@@ -191,6 +162,8 @@ class _EntryContainerState extends State<EntryContainer> {
           ),
         );
       case 'Date':
+        widget.formController
+            .setDateValue('$parentKey-$fieldKey', DateTime.now());
         return Center(
           child: Wrap(
             alignment: WrapAlignment.spaceBetween,
@@ -199,23 +172,69 @@ class _EntryContainerState extends State<EntryContainer> {
               DatePickerExample(
                 restorationId: 'main',
                 onDateChanged: (newDate) {
-                  widget.dateValues['$parentKey-$fieldKey'] = newDate!;
+                  widget.formController
+                      .setDateValue('$parentKey-$fieldKey', newDate!);
                 },
               ),
             ],
           ),
         );
       case 'CheckBox':
+        widget.formController.setCheckBoxValue('$parentKey-$fieldKey', false);
+
         return Center(
           child: CheckBoxOpt(
             titleTxt: fieldLabel,
             onChanged: (value) {
-              widget.checkBoxValues['$parentKey-$fieldKey'] = value;
+              widget.formController
+                  .setCheckBoxValue('$parentKey-$fieldKey', value);
             },
           ),
         );
       default:
-        return const Text("Unknown Field Type");
+        // return const Text("Error: \nUnknown field type");
+        // throw FormatException(
+        //     "Error: \nUnknown field type \nInformation: \n Code: #101 \n in $parentKey:$fieldKey");
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text('Error'),
+                ),
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Error: Unknown field type',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        'Information: \n Code: #101 \n in $parentKey-$fieldKey',
+                        style: const TextStyle(fontSize: 18),
+                        textAlign: TextAlign.center,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context)
+                              .popUntil((route) => route.isFirst);
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ).then((_) {
+            // Ensure we pop back to the main screen if the dialog is closed by any means
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          });
+        });
+        return Container();
     }
   }
 
@@ -288,7 +307,7 @@ class _EntryContainerState extends State<EntryContainer> {
         expandable
             ? InkWell(
                 onTap: () {
-                  addRow();
+                  addTableRow();
                 },
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,

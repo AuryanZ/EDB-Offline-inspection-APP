@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:app/src/models/formControllers.model.dart';
 import 'package:app/src/widgets/inspection/form_generator.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,14 +14,10 @@ class InspectionFormScreen extends StatefulWidget {
 }
 
 class _InspectionFormScreen extends State<InspectionFormScreen> {
-  final Map<String, TextEditingController> textControllers = {};
-  final Map<String, String> dropdownValues = {};
-  final Map<String, DateTime> dateValues = {};
-  final Map<String, bool> checkBoxValues = {};
+  FormControllers formController = FormControllers();
 
   Future<String> loadForm() async {
     final formName = "${widget.title.replaceAll(" ", "_").toLowerCase()}.json";
-    // print(formName);
     try {
       return await rootBundle.loadString('assets/form_temp/$formName');
     } catch (e) {
@@ -39,29 +36,8 @@ class _InspectionFormScreen extends State<InspectionFormScreen> {
           return Text('Error: ${snapshot.error}');
         } else {
           Map<String, dynamic> data = json.decode(snapshot.data!);
-
           final formTitle = data['Title'];
           data.remove('Title');
-          // Initialize controllers
-          data.forEach((key, value) {
-            value.forEach((subKey, subValue) {
-              //check if subValue have type
-              if (subKey != 'Name') {
-                if (subValue['Type'] == 'Text' ||
-                    subValue['Type'] == 'Number' ||
-                    subValue['Type'] == 'Comment') {
-                  textControllers['$key-$subKey'] = TextEditingController();
-                } else if (subValue['Type'] == 'Dropdown') {
-                  dropdownValues['$key-$subKey'] = '';
-                } else if (subValue['Type'] == 'Date') {
-                  dateValues['$key-$subKey'] = DateTime.now();
-                } else if (subValue['Type'] == 'Checkbox') {
-                  checkBoxValues['$key-$subKey'] = false;
-                }
-              }
-            });
-          });
-          // print(textControllers.keys.toList());
           return Scaffold(
             appBar: AppBar(
               backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -70,7 +46,6 @@ class _InspectionFormScreen extends State<InspectionFormScreen> {
             body: LayoutBuilder(builder:
                 (BuildContext context, BoxConstraints viewportConstraints) {
               return SingleChildScrollView(
-                // padding: const EdgeInsets.all(24),
                 child: ConstrainedBox(
                     constraints: BoxConstraints(
                       minHeight: viewportConstraints.maxHeight,
@@ -80,9 +55,6 @@ class _InspectionFormScreen extends State<InspectionFormScreen> {
                         Center(
                           child: Text(
                             formTitle,
-                            // style: const TextStyle(
-                            //     fontWeight: FontWeight.bold, fontSize: 40),
-
                             style: DefaultTextStyle.of(context)
                                 .style
                                 .apply(fontSizeFactor: 3.0, fontWeightDelta: 2),
@@ -94,10 +66,7 @@ class _InspectionFormScreen extends State<InspectionFormScreen> {
                             for (var entry in data.entries)
                               EntryContainer(
                                 entry: entry,
-                                textControllers: textControllers,
-                                dropdownValues: dropdownValues,
-                                dateValues: dateValues,
-                                checkBoxValues: checkBoxValues,
+                                formController: formController,
                               ),
                           ]),
                         ),
@@ -119,12 +88,12 @@ class _InspectionFormScreen extends State<InspectionFormScreen> {
                             onPressed: () {
                               // Validate returns true if the form is valid, or false otherwise.
                               final collectedData = {
-                                'textFields': textControllers.map(
-                                    (key, controller) =>
+                                'textFields': formController.textControllers
+                                    .map((key, controller) =>
                                         MapEntry(key, controller.text)),
-                                'dropdowns': dropdownValues,
-                                'dates': dateValues,
-                                'checkboxes': checkBoxValues,
+                                'dropdowns': formController.dropdownValues,
+                                'dates': formController.dateValues,
+                                'checkboxes': formController.checkBoxValues,
                               };
                               print(collectedData);
                               if (true) {
