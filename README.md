@@ -16,30 +16,30 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 ## Template Structure:
-|- Title (String, Form name, it will display on top of the form)  
-|- SectionName  
-|  |- Name   
-|  |  |-Label (String, Section name, it will display on top of the section)  
-|  |  |-Alert (String, Section alert message, it will display on top of the section under the label)  
-|  |  |-Hint  (String, Section hint message, it will display a question icon on top of the section next the alert)  
-
-├── src
-│   ├── controller
-│   │   ├── **/*.css
-│   ├── views
-│   ├── model
-│   ├── index.js
-├── public
-│   ├── css
-│   │   ├── **/*.css
-│   ├── images
-│   ├── js
-│   ├── index.html
-├── dist (or build
-├── node_modules
-├── package.json
-├── package-lock.json
-└── .gitignore
+├── Title (String, Form name, it will display on top of the form)  
+├── SectionName  
+│   ├── Name  
+│   │   ├── Label (String, Section name, it will display on top of the section)  
+│   │   ├── Alert (String, Section alert message, it will display on top of the section under the label)    
+│   │   ├── Hint  (String, Section hint message, it will display a question icon on top of the section next the alert)  
+│   │   ├── Label (String, Section name, it will display on top of the section)  
+│   │   ├── SectionView (String, How to display the section, Choose from: 'FormView' and 'TableView')    
+│   │   ├── Expandable (bool, Must have if SectionView choose 'TableView')     
+│   │   ├── tableIndex (List, Must have if SectionView choose 'TableView', Set [] if auto index)   
+│   ├── sectionItem  
+│   │   ├── Label (String, Section item name)  
+│   │   ├── Type (String, item Type, Choose from: 'Text', 'Number', 'Comment', 'Dropdown', 'CheckBox', 'Date')  
+│   │   ├── Options (List, Must have if Type choose 'Dropdown')  
+│   │   ├── DbTableName (String, nullable, database table name)  
+│   │   ├── DbColumnName (String, nullable, database ColumnName name)  
+│   │   ├── Unit (String, nullable, Unit - display next to input box)  
+│   │   ├── Required (bool, nullable, Must have if required)  
+│   ├── sectionItem  
+...  
+│   ├── sectionItem  
+├── SectionName   
+....  
+├── SectionName  
 
 ## Error Code:
 #### \#101: Check form template section type.  
