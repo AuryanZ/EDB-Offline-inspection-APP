@@ -25,7 +25,7 @@ samples, guidance on mobile development, and a full API reference.
 │   │   ├── Label (String, Section name, it will display on top of the section)  
 │   │   ├── SectionView (String, How to display the section, Choose from: 'FormView' and 'TableView')    
 │   │   ├── Expandable (bool, Must have if SectionView choose 'TableView')     
-│   │   ├── tableIndex (List, Must have if SectionView choose 'TableView', Set [] if auto index)   
+│   │   ├── tableIndex (List, Must have if SectionView choose 'TableView', Set \[\] if auto index)   
 │   ├── sectionItem  
 │   │   ├── Label (String, Section item name)  
 │   │   ├── Type (String, item Type, Choose from: 'Text', 'Number', 'Comment', 'Dropdown', 'CheckBox', 'Date')  

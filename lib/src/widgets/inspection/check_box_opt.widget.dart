@@ -23,6 +23,7 @@ class _CheckBoxOpt extends State<CheckBoxOpt> {
             .apply(fontSizeFactor: 1.5, fontWeightDelta: 2),
       ),
       value: isChecked,
+      activeColor: Colors.green,
       onChanged: (bool? value) {
         setState(() {
           isChecked = value!;

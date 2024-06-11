@@ -1,3 +1,4 @@
+import 'package:app/src/services/database.services.dart';
 import 'package:app/src/widgets/home/inspect_selection.widget.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +25,10 @@ class _HomePageState extends State<HomePage> {
     "SWER Sub Inspection",
     "Voltage Reg Inspection",
     "Zone Sub Inspection",
+    "Ground Mount Switchgear Annual Inspection",
   ];
+
+  final appDB = DatabaseService();
 
   @override
   Widget build(BuildContext context) {

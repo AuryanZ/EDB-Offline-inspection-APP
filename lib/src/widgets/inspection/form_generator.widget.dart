@@ -6,7 +6,7 @@ import 'package:app/src/widgets/inspection/input_text_opt.widget.dart';
 import 'package:flutter/material.dart';
 
 class EntryContainer extends StatefulWidget {
-  final MapEntry<String, dynamic> entry;
+  final MapEntry<String, dynamic> entry; // Section Data
   final FormControllers formController;
 
   const EntryContainer(
@@ -16,6 +16,7 @@ class EntryContainer extends StatefulWidget {
   State<EntryContainer> createState() => _EntryContainerState();
 }
 
+/* build a empty container for odd number of items in section to lock UI space */
 Widget buildContainer(Widget child, double widthSize) {
   return Container(
     padding: const EdgeInsets.all(8.0),
@@ -29,7 +30,11 @@ Widget buildContainer(Widget child, double widthSize) {
 
 class _EntryContainerState extends State<EntryContainer> {
   List<Map<String, dynamic>> rows = [];
-// Only use for Defualt Table Index Which is "tableIndex": []"
+/* addTableRow Only use for Defualt Table Index Which is "tableIndex": []" 
+  Add new row to table view.
+  Add new Controller to FormController.
+  contraller style is "Section Name-index-fieldKey"
+*/
   void addTableRow() {
     setState(() {
       final newRow = Map<String, dynamic>.from(widget.entry.value)
@@ -48,19 +53,25 @@ class _EntryContainerState extends State<EntryContainer> {
     final sectionView = widget.entry.value['Name']['SectionView'];
     final tableIndex = widget.entry.value['Name']['tableIndex'];
     if (sectionView == "TableView") {
+      // initial table rows, if tableIndex is empty, set index start from 0
       rows = [];
       final parentKey = widget.entry.key;
-
-      for (int i = 0; i <= tableIndex.length; i++) {
-        var index = i.toString();
-        if (tableIndex.length >= 1) {
-          if (i == tableIndex.length) {
-            break;
+      if (tableIndex.length > 0) {
+        for (int i = 0; i <= tableIndex.length; i++) {
+          var index = i.toString();
+          if (tableIndex.length >= 1) {
+            if (i == tableIndex.length) {
+              break;
+            }
+            index = tableIndex[i];
           }
-          index = tableIndex[i];
+          rows.add(
+              Map<String, dynamic>.from(widget.entry.value)..remove('Name'));
+          widget.formController.addTableController(rows[i], parentKey, index);
         }
+      } else {
         rows.add(Map<String, dynamic>.from(widget.entry.value)..remove('Name'));
-        widget.formController.addTableController(rows[i], parentKey, index);
+        widget.formController.addTableController(rows[0], parentKey, '0');
       }
     }
   }
@@ -70,6 +81,9 @@ class _EntryContainerState extends State<EntryContainer> {
     final fieldData = field.value as Map<String, dynamic>;
     final fieldType = fieldData['Type'];
     final fieldLabel = fieldData['Label'];
+    final fieldDbTable = fieldData['DbTableName'];
+    final fieldDbColumn = fieldData['DbColumnName'];
+    final dbRefKey = fieldData['RefKey'];
     final fieldKey = field.key;
     final children = labelDisplay
         ? <Widget>[
@@ -88,15 +102,17 @@ class _EntryContainerState extends State<EntryContainer> {
     switch (fieldType) {
       case 'Dropdown':
         final options = List<String>.from(fieldData['Options'] as List);
-        widget.formController.setDropdownValue('$parentKey-$fieldKey', '');
         return Center(
           child: Wrap(
             alignment: WrapAlignment.spaceBetween,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               ...children,
-              DropdownMenuExample(
+              DropdownBox(
                 dropdownOpt: options,
+                dbTableName: fieldDbTable,
+                dbColumnName: fieldDbColumn,
+                refKey: dbRefKey,
                 onChanged: (value) {
                   widget.formController
                       .setDropdownValue('$parentKey-$fieldKey', value!);
@@ -158,7 +174,6 @@ class _EntryContainerState extends State<EntryContainer> {
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
-            border: const OutlineInputBorder(),
           ),
         );
       case 'Date':
@@ -191,6 +206,7 @@ class _EntryContainerState extends State<EntryContainer> {
             },
           ),
         );
+
       default:
         // return const Text("Error: \nUnknown field type");
         // throw FormatException(
@@ -238,15 +254,25 @@ class _EntryContainerState extends State<EntryContainer> {
     }
   }
 
+/* ******************Section Process******************* */
+/*
+Tabel View
+- field: Table Section data.
+- parentKey: Section Name(Title).
+- tableInfo: Table Information{
+              expandable: is this table can add row by user. 
+              tableIndex: Defualt table index
+              }.
+ */
   Widget buildTableView(Map<String, dynamic> field, String parentKey,
       Map<String, dynamic> tableInfo) {
     final headers = <Widget>[
       Container(),
     ];
-    // print(tableInfo);
     final expandable = tableInfo['Expandable'];
     final tableIndex = tableInfo['tableIndex'];
 
+    // Table Column Headers
     headers.addAll(field.entries.map((entry) {
       if (entry.value is Map<String, dynamic> &&
           entry.value.containsKey('Label')) {
@@ -263,6 +289,8 @@ class _EntryContainerState extends State<EntryContainer> {
       }
       return const Text('');
     }).toList());
+
+    // Table Rows by index
     final tableRows = <TableRow>[TableRow(children: headers)];
     for (int i = 0; i < rows.length; i++) {
       final inputs = <Widget>[
@@ -312,10 +340,13 @@ class _EntryContainerState extends State<EntryContainer> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.add),
-                    Text('Add Row',
+                    Icon(
+                      Icons.add,
+                    ),
+                    Text(' Add Row',
                         style: TextStyle(
-                            fontSize: 15,
+                            decoration: TextDecoration.underline,
+                            fontSize: 18,
                             color: Colors.blueAccent,
                             fontWeight: FontWeight.bold)),
                   ],
@@ -325,6 +356,12 @@ class _EntryContainerState extends State<EntryContainer> {
     ));
   }
 
+/*
+Form View: Generate View.
+- field: Section data.
+- parentKey: Section Name(Title).
+- widthSize: app window size, inheritance from build(MediaQuery.of(context).size.width)
+ */
   Widget buildFormView(
       Map<String, dynamic> field, String parentKey, double widthSize) {
     final widgets = <Widget>[];
@@ -358,9 +395,14 @@ class _EntryContainerState extends State<EntryContainer> {
       }
 
       widgets.add(
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: children,
+        Container(
+          decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: Colors.grey, width: 1.0)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: children,
+          ),
         ),
       );
     }
@@ -370,11 +412,13 @@ class _EntryContainerState extends State<EntryContainer> {
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> data = Map<String, dynamic>.from(widget.entry.value);
+    /* Collect Section Data, 
+    it contain how the section display and 
+    send data to different process by sectionView */
     final subTitle = data['Name']['Label'];
     final alert = data['Name']['Alert'];
     final hint = data['Name']['Hint'];
     final sectionView = data['Name']['SectionView'];
-    // print(sectionView);
     final widgets = <Widget>[];
     final widthSize = MediaQuery.of(context).size.width;
     final parentKey = widget.entry.key;
@@ -384,10 +428,8 @@ class _EntryContainerState extends State<EntryContainer> {
         'tableIndex': data['Name']['tableIndex']
       };
       data.remove('Name');
-      // print(tableInfo);
       widgets.add(SizedBox(
           width: widthSize * 0.85,
-          // height: 200,
           child: buildTableView(data, parentKey, tableInfo)));
     } else {
       data.remove('Name');

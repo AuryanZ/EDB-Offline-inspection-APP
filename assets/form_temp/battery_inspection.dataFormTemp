@@ -70,14 +70,6 @@
             "DbColumnName": null,
             "Unit": null,
             "Required": true
-        },
-        "Comments": {
-            "Label": "Comments",
-            "Type": "Comment",
-            "DbTableName": null,
-            "DbColumnName": null,
-            "Unit": null,
-            "Required": false
         }
     },
     "Inspection": {

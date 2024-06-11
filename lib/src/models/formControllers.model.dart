@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -6,11 +8,14 @@ class FormControllers {
   final Map<String, String> dropdownValues = {};
   final Map<String, DateTime> dateValues = {};
   final Map<String, bool> checkBoxValues = {};
+  final List<Map<String, dynamic>> autoFillControllers = [];
 
   FormControllers();
 
   void setTextController(String key, TextEditingController value) {
-    textControllers[key] = value;
+    if (textControllers[key] == null) {
+      textControllers[key] = value;
+    }
   }
 
   // get controller for a text field
@@ -19,7 +24,11 @@ class FormControllers {
   }
 
   void setDropdownValue(String key, String value) {
-    dropdownValues[key] = value;
+    if (dropdownValues[key] != value && value != "") {
+      dropdownValues[key] = value;
+    } else {
+      dropdownValues[key] = "";
+    }
   }
 
   String getDropdownValue(String key) {
@@ -69,5 +78,53 @@ class FormControllers {
             'Error in adding table controller. \n Message: $e');
       }
     });
+  }
+
+  Map<String, dynamic> getControllersValue() {
+    Map<String, dynamic> data = {};
+    data.addAll(textControllers.map((key, value) => MapEntry(key, value.text)));
+    data.addAll(dropdownValues);
+    data.addAll(dateValues);
+    data.addAll(checkBoxValues);
+    var sortedData = SplayTreeMap<String, dynamic>.from(data);
+    return sortedData;
+  }
+
+  void addAutoFillController(String tableName, String columnName, String refKey,
+      String controllerKey, String controllerType) {
+    switch (controllerType) {
+      case 'Text':
+        autoFillControllers.add({
+          refKey: Map<String, dynamic>.from({
+            'tableName': tableName,
+            'columnName': columnName,
+            'controller': textControllers[controllerKey]
+          })
+        });
+      case 'Dropdown':
+        autoFillControllers.add({
+          refKey: Map<String, dynamic>.from({
+            'tableName': tableName,
+            'columnName': columnName,
+            'controller': dropdownValues[controllerKey]
+          })
+        });
+      case 'Date':
+        autoFillControllers.add({
+          refKey: Map<String, dynamic>.from({
+            'tableName': tableName,
+            'columnName': columnName,
+            'controller': dateValues[controllerKey]
+          })
+        });
+      case 'CheckBox':
+        autoFillControllers.add({
+          refKey: Map<String, dynamic>.from({
+            'tableName': tableName,
+            'columnName': columnName,
+            'controller': checkBoxValues[controllerKey]
+          })
+        });
+    }
   }
 }
