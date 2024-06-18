@@ -44,6 +44,8 @@ dependencies:
   image_field: ^0.0.10
   sqflite_common_ffi: ^2.3.3
   flutter_typeahead: ^5.2.0
+  image_picker: ^1.1.2
+  multi_image_picker: ^4.8.01
   
 
 dev_dependencies:

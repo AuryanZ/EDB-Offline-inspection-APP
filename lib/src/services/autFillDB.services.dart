@@ -7,7 +7,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 class AutoFillDbServices {
   static const String dbName = 'autoFill.db';
 
-  Future<Database> getDB() async {
+  Future<Database> _getDB() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, dbName);
 
@@ -24,8 +24,13 @@ class AutoFillDbServices {
     return await openDatabase(path);
   }
 
+  void dispose() async {
+    final db = await _getDB();
+    await db.close();
+  }
+
   Future<List<Map<String, dynamic>>?> getTable(String tableName) async {
-    final db = await getDB();
+    final db = await _getDB();
     List<Map<String, dynamic>> maps = await db.query(tableName);
     List<Map<String, dynamic>> data = [];
     List.generate(maps.length, (index) {
@@ -36,7 +41,7 @@ class AutoFillDbServices {
   }
 
   Future<List<dynamic>> getColumn(String tableName, String columnName) async {
-    final db = await getDB();
+    final db = await _getDB();
     List<Map<String, dynamic>> maps = await db.query(tableName);
     List<dynamic> data = [];
     List.generate(maps.length, (index) {
@@ -45,5 +50,15 @@ class AutoFillDbServices {
     });
 
     return data;
+  }
+
+  Future<dynamic> getData(
+      String tableName, String columnName, String value, String refKey) async {
+    final db = await _getDB();
+
+    final data = await db.query(tableName,
+        columns: [columnName], where: '$refKey = ?', whereArgs: [value]);
+    // print(data.first[columnName]);
+    return data.first[columnName];
   }
 }

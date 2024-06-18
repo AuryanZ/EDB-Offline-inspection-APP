@@ -1,7 +1,9 @@
 import 'package:app/src/models/formControllers.model.dart';
+// import 'package:app/src/widgets/inspection/camera_opt.widget.dart';
 import 'package:app/src/widgets/inspection/check_box_opt.widget.dart';
 import 'package:app/src/widgets/inspection/date_time_picker_opt.widget.dart';
 import 'package:app/src/widgets/inspection/drop_down_opt.widget.dart';
+import 'package:app/src/widgets/inspection/image_opt.widget.dart';
 import 'package:app/src/widgets/inspection/input_text_opt.widget.dart';
 import 'package:flutter/material.dart';
 
@@ -101,6 +103,11 @@ class _EntryContainerState extends State<EntryContainer> {
 
     switch (fieldType) {
       case 'Dropdown':
+        widget.formController.setTextController(
+            '$parentKey-$fieldKey', TextEditingController(),
+            tableName: fieldDbTable,
+            columnName: fieldDbColumn,
+            refKey: dbRefKey);
         final options = List<String>.from(fieldData['Options'] as List);
         return Center(
           child: Wrap(
@@ -113,17 +120,21 @@ class _EntryContainerState extends State<EntryContainer> {
                 dbTableName: fieldDbTable,
                 dbColumnName: fieldDbColumn,
                 refKey: dbRefKey,
-                onChanged: (value) {
-                  widget.formController
-                      .setDropdownValue('$parentKey-$fieldKey', value!);
+                controller: widget.formController
+                    .getTextController('$parentKey-$fieldKey'),
+                processAutoFill: (refKey, value) {
+                  widget.formController.processAutoFill(refKey, value);
                 },
               ),
             ],
           ),
         );
       case 'Number':
-        widget.formController
-            .setTextController('$parentKey-$fieldKey', TextEditingController());
+        widget.formController.setTextController(
+            '$parentKey-$fieldKey', TextEditingController(),
+            tableName: fieldDbTable,
+            columnName: fieldDbColumn,
+            refKey: dbRefKey);
         return Center(
           child: Wrap(
             alignment: WrapAlignment.spaceBetween,
@@ -140,8 +151,11 @@ class _EntryContainerState extends State<EntryContainer> {
           ),
         );
       case 'Text':
-        widget.formController
-            .setTextController('$parentKey-$fieldKey', TextEditingController());
+        widget.formController.setTextController(
+            '$parentKey-$fieldKey', TextEditingController(),
+            tableName: fieldDbTable,
+            columnName: fieldDbColumn,
+            refKey: dbRefKey);
         return Center(
           child: Wrap(
             alignment: WrapAlignment.spaceBetween,
@@ -162,12 +176,13 @@ class _EntryContainerState extends State<EntryContainer> {
             .setTextController('$parentKey-$fieldKey', TextEditingController());
         return TextField(
           maxLines: null,
-          expands: true,
+          // expands: true,
           keyboardType: TextInputType.multiline,
           textAlign: TextAlign.start,
           controller:
               widget.formController.getTextController('$parentKey-$fieldKey'),
           decoration: InputDecoration(
+            border: const OutlineInputBorder(borderSide: BorderSide.none),
             alignLabelWithHint: true,
             labelText: fieldLabel,
             labelStyle: const TextStyle(
@@ -206,11 +221,10 @@ class _EntryContainerState extends State<EntryContainer> {
             },
           ),
         );
+      case 'Images':
+      // return const Center(child: cameraOpt());
 
       default:
-        // return const Text("Error: \nUnknown field type");
-        // throw FormatException(
-        //     "Error: \nUnknown field type \nInformation: \n Code: #101 \n in $parentKey:$fieldKey");
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showDialog(
             context: context,
@@ -396,6 +410,7 @@ Form View: Generate View.
 
       widgets.add(
         Container(
+          padding: const EdgeInsets.all(8.0),
           decoration: const BoxDecoration(
             border: Border(top: BorderSide(color: Colors.grey, width: 1.0)),
           ),
@@ -431,6 +446,8 @@ Form View: Generate View.
       widgets.add(SizedBox(
           width: widthSize * 0.85,
           child: buildTableView(data, parentKey, tableInfo)));
+    } else if (sectionView == "Images") {
+      widgets.add(PhotoUploadExample());
     } else {
       data.remove('Name');
       widgets.add(buildFormView(data, parentKey, widthSize));

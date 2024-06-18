@@ -28,6 +28,7 @@ class _InputBoxOptState extends State<InputBoxOpt> {
       return SizedBox(
         width: MediaQuery.of(context).size.width * 0.50,
         child: TextFormField(
+          style: const TextStyle(fontSize: 20),
           controller: controller,
           keyboardType: TextInputType.number,
           inputFormatters: <TextInputFormatter>[
@@ -35,6 +36,7 @@ class _InputBoxOptState extends State<InputBoxOpt> {
           ],
           decoration: InputDecoration(
             labelText: label,
+            labelStyle: const TextStyle(color: Colors.grey, fontSize: 15),
             suffixIcon: Padding(
               padding: const EdgeInsets.all(15.0),
               child: Text(unit == null || unit.isEmpty ? '' : unit),
@@ -47,8 +49,10 @@ class _InputBoxOptState extends State<InputBoxOpt> {
       return SizedBox(
         width: MediaQuery.of(context).size.width * 0.50,
         child: TextFormField(
+          style: const TextStyle(fontSize: 20),
           controller: controller,
           decoration: InputDecoration(
+            labelStyle: const TextStyle(color: Colors.grey, fontSize: 15),
             labelText: label,
             border: const OutlineInputBorder(),
           ),

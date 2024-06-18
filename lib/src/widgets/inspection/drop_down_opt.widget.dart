@@ -4,18 +4,19 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class DropdownBox extends StatefulWidget {
   final List<String> dropdownOpt;
-  final ValueChanged<String?> onChanged;
+  final TextEditingController controller;
   final String? dbTableName;
   final String? dbColumnName;
   final String? refKey;
-
+  final Function? processAutoFill;
   const DropdownBox(
       {super.key,
       required this.dropdownOpt,
-      required this.onChanged,
+      required this.controller,
       this.dbTableName,
       this.dbColumnName,
-      this.refKey});
+      this.refKey,
+      this.processAutoFill});
 
   @override
   State<DropdownBox> createState() => _DropdownBoxState();
@@ -50,31 +51,31 @@ class _DropdownBoxState extends State<DropdownBox> {
         .toList();
   }
 
+  void _autoFillUpdate(String value) {
+    widget.dbTableName != null &&
+            widget.dbColumnName != null &&
+            widget.refKey != null
+        ? widget.processAutoFill!(widget.refKey!, value)
+        : null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    // List<String> list = widget.dropdownOpt;
-    // List<String> list = options;
+    final controller = widget.controller;
     return Container(
-        decoration: const BoxDecoration(
-            // border: Border(
-            //   top: BorderSide(),
-            //   left: BorderSide(),
-            //   right: BorderSide(),
-            //   bottom: BorderSide(),
-            // ),
-            ),
+        decoration: const BoxDecoration(),
         child: SizedBox(
             width: MediaQuery.of(context).size.width * 0.4,
             child: TypeAheadField<String>(
               builder: (context, TextEditingController builderController,
                   focusNode) {
                 return TextField(
-                    // mouseCursor: MouseCursor.defer,
-                    controller: selectedValue == null
-                        ? builderController
-                        : TextEditingController(text: selectedValue),
+                    controller: controller,
+                    style: const TextStyle(fontSize: 20),
                     focusNode: focusNode,
                     decoration: const InputDecoration(
+                      labelText: 'Select',
+                      labelStyle: TextStyle(color: Colors.grey, fontSize: 15),
                       border: OutlineInputBorder(),
                       suffixIcon: Icon(
                         Icons.expand_more,
@@ -89,8 +90,9 @@ class _DropdownBoxState extends State<DropdownBox> {
               onSelected: (String newValue) {
                 setState(() {
                   selectedValue = newValue;
+                  controller.text = selectedValue!;
+                  _autoFillUpdate(selectedValue!);
                 });
-                widget.onChanged(newValue);
               },
               suggestionsCallback: _getSuggestions,
             )));
