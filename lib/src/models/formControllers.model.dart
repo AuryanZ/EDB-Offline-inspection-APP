@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:io';
 
 import 'package:app/src/services/autFillDB.services.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class FormControllers {
   final Map<String, DateTime> dateValues = {};
   final Map<String, bool> checkBoxValues = {};
   final List<Map<String, dynamic>> autoFillControllers = [];
+  final List<File> imageList = [];
 
   void _addAutoFillController(String tableName, String columnName,
       String refKey, String controllerKey, String controllerType) {
@@ -72,46 +74,15 @@ class FormControllers {
       {String? tableName, String? columnName, String? refKey}) {
     if (textControllers[key] == null) {
       textControllers[key] = value;
-      // print("setTextController: \nkey: $key TableName: $tableName");
       tableName != null && columnName != null && refKey != null
           ? _addAutoFillController(tableName, columnName, refKey, key, 'Text')
           : null;
     }
   }
 
-  // void updateTexeController(String key, String value) {
-  //   textControllers[key]!.text = value;
-  // }
-
   TextEditingController getTextController(String key) {
-    // print("objectKey: $key, objectValue: ${textControllers[key]!.text}");
     return textControllers[key]!;
   }
-
-  // void setDropdownValue(String key, String value,
-  //     {String? tableName, String? columnName, String? refKey}) {
-  //   if (dropdownValues[key] != value && value != "") {
-  //     dropdownValues[key] = value;
-  //     if (columnName == refKey &&
-  //         _dbInfoNotNullCheck(tableName, columnName, refKey)) {
-  //       print("process auto fill");
-  //       _processAutoFill(refKey!, value);
-  //     }
-  //   } else {
-  //     dropdownValues[key] = "";
-  //     _dbInfoNotNullCheck(tableName, columnName, refKey)
-  //         ? _addAutoFillController(
-  //             tableName!, columnName!, refKey!, key, 'Dropdown')
-  //         : null;
-  //     // tableName != null && columnName != null && refKey != null
-  //     //     ? _addAutoFillController(tableName, columnName, refKey, key, 'Text')
-  //     //     : null;
-  //   }
-  // }
-
-  // String getDropdownValue(String key) {
-  //   return dropdownValues[key]!;
-  // }
 
   void setDateValue(String key, DateTime value,
       {String? tableName, String? columnName, String? refKey}) {
@@ -148,9 +119,6 @@ class FormControllers {
         if (value["Type"] == "Text" || value["Type"] == "Dropdown") {
           setTextController(newKey, TextEditingController(),
               tableName: dbTableName, columnName: dbColumnName, refKey: refKey);
-          // } else if (value["Type"] == "Dropdown") {
-          //   setDropdownValue(newKey, '',
-          //       tableName: dbTableName, columnName: dbColumnName, refKey: refKey);
         } else if (value["Type"] == "Date") {
           setDateValue(newKey, DateTime.now(),
               tableName: dbTableName, columnName: dbColumnName, refKey: refKey);
@@ -171,7 +139,6 @@ class FormControllers {
   Map<String, dynamic> getControllersValue() {
     Map<String, dynamic> data = {};
     data.addAll(textControllers.map((key, value) => MapEntry(key, value.text)));
-    // data.addAll(dropdownValues);
     data.addAll(dateValues);
     data.addAll(checkBoxValues);
     var sortedData = SplayTreeMap<String, dynamic>.from(data);

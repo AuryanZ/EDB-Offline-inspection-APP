@@ -447,7 +447,7 @@ Form View: Generate View.
           width: widthSize * 0.85,
           child: buildTableView(data, parentKey, tableInfo)));
     } else if (sectionView == "Images") {
-      widgets.add(PhotoUploadExample());
+      widgets.add(const PhotoUploadOpt());
     } else {
       data.remove('Name');
       widgets.add(buildFormView(data, parentKey, widthSize));
