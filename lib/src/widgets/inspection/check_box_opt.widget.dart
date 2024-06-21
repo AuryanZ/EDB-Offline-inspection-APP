@@ -15,21 +15,34 @@ class _CheckBoxOpt extends State<CheckBoxOpt> {
   @override
   Widget build(BuildContext context) {
     final String titleTxt = widget.titleTxt;
-    return CheckboxListTile(
-      title: Text(
-        titleTxt,
-        style: DefaultTextStyle.of(context)
-            .style
-            .apply(fontSizeFactor: 1.5, fontWeightDelta: 2),
-      ),
-      value: isChecked,
-      activeColor: Colors.green,
-      onChanged: (bool? value) {
-        setState(() {
-          isChecked = value!;
-          widget.onChanged(isChecked);
-        });
-      },
-    );
+    if (titleTxt == "") {
+      return Checkbox(
+        value: isChecked,
+        activeColor: Colors.green,
+        onChanged: (bool? value) {
+          setState(() {
+            isChecked = value!;
+            widget.onChanged(isChecked);
+          });
+        },
+      );
+    } else {
+      return CheckboxListTile(
+        title: Text(
+          titleTxt,
+          style: DefaultTextStyle.of(context)
+              .style
+              .apply(fontSizeFactor: 1.5, fontWeightDelta: 2),
+        ),
+        value: isChecked,
+        activeColor: Colors.green,
+        onChanged: (bool? value) {
+          setState(() {
+            isChecked = value!;
+            widget.onChanged(isChecked);
+          });
+        },
+      );
+    }
   }
 }

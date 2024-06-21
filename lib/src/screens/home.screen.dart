@@ -13,6 +13,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final buttonNames = [
+    "Function Display",
     "Asset Amendment Form",
     "Defect Report (Emergent Sheet)",
     "Job Sheet (UAT)",

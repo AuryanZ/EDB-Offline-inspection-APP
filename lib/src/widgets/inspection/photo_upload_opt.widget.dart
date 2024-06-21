@@ -1,39 +1,92 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:app/src/screens/camera.screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+// import 'package:permission_handler/permission_handler.dart';
+import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class PhotoUploadOpt extends StatefulWidget {
-  const PhotoUploadOpt({super.key});
+  final List<File> images;
+  const PhotoUploadOpt({super.key, required this.images});
 
   @override
-  State<PhotoUploadOpt> createState() => _PhotoUploadOptState();
+  State<StatefulWidget> createState() => _PhotoUploadOptState();
 }
 
 class _PhotoUploadOptState extends State<PhotoUploadOpt> {
-  final List<File> _images = [];
   final ImagePicker _picker = ImagePicker();
-  // int? _hoveredIndex;
+  String _cameraInfo = 'Unknown';
+  int _cameraIndex = 0;
+  List<CameraDescription> _cameras = <CameraDescription>[];
 
+// Pick image from gallery
   Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source);
+    // final pickedFile = await _picker.pickImage(source: source);
 
-    if (pickedFile != null) {
-      setState(() {
-        _images.add(File(pickedFile.path));
-      });
+    try {
+      final pickedFile = await _picker.pickImage(source: source);
+      if (pickedFile != null) {
+        setState(() {
+          widget.images.add(File(pickedFile.path));
+        });
+      }
+    } catch (e) {
+      debugPrint("Error picking image: $e");
     }
   }
 
   Future<void> _pickMultipleImages() async {
-    final pickedFiles = await _picker.pickMultiImage();
-
-    setState(() {
-      _images.addAll(
-          pickedFiles.map((pickedFile) => File(pickedFile.path)).toList());
-    });
+    try {
+      final pickedFiles = await _picker.pickMultiImage();
+      setState(() {
+        widget.images.addAll(
+            pickedFiles.map((pickedFile) => File(pickedFile.path)).toList());
+      });
+    } catch (e) {
+      debugPrint("Error picking images: $e");
+    }
   }
 
+  Future<void> _requestCameraPermission() async {
+    String cameraInfo;
+    final status = await Permission.camera.request();
+    if (status.isGranted) {
+      cameraInfo = 'Take a Photo';
+    } else {
+      cameraInfo = 'No available cameras';
+    }
+
+    List<CameraDescription> cameras = <CameraDescription>[];
+
+    int cameraIndex = 0;
+    try {
+      cameras = await CameraPlatform.instance.availableCameras();
+      if (cameras.isEmpty) {
+        cameraInfo = 'No available cameras';
+      } else {
+        cameraIndex = _cameraIndex % cameras.length;
+        cameraInfo = 'Take a Photo';
+        debugPrint("Found camera: ${cameras[cameraIndex].name}");
+      }
+    } on PlatformException catch (e) {
+      cameraInfo = 'Failed to get cameras: ${e.code}: ${e.message}';
+    }
+
+    if (mounted) {
+      setState(() {
+        _cameraIndex = cameraIndex;
+        _cameras = cameras;
+        _cameraInfo = cameraInfo;
+      });
+    }
+  }
+
+// Show picker
   void _showPicker(BuildContext context, {bool multiImg = true}) {
     showModalBottomSheet(
       context: context,
@@ -53,9 +106,26 @@ class _PhotoUploadOptState extends State<PhotoUploadOpt> {
               ),
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text('Camera'),
+                title: Text(_cameraInfo),
                 onTap: () {
+                  // _openCamera();
+                  // _pickImage(ImageSource.camera);
                   Navigator.of(context).pop();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CameraScreen(
+                            title: 'cam',
+                            cameras: _cameras,
+                            cameraIndex: _cameraIndex,
+                            cameraInfo: _cameraInfo,
+                            onPictureTaken: (image) => setState(
+                                  () {
+                                    widget.images.add(image);
+                                  },
+                                )),
+                      ));
+                  // Navigator.of(context).pop();
                 },
               ),
             ],
@@ -65,12 +135,14 @@ class _PhotoUploadOptState extends State<PhotoUploadOpt> {
     );
   }
 
+// Delete image
   void _removeImage(int index) {
     setState(() {
-      _images.removeAt(index);
+      widget.images.removeAt(index);
     });
   }
 
+// Show image
   void _showImage(
       BuildContext context, File image, Function(int)? removeImage) {
     showDialog(
@@ -107,7 +179,7 @@ class _PhotoUploadOptState extends State<PhotoUploadOpt> {
                     onPressed: () {
                       Navigator.of(context).pop();
                       // _removeImage(index);
-                      removeImage!(_images.indexOf(image));
+                      removeImage!(widget.images.indexOf(image));
                     },
                   ),
                 ),
@@ -125,11 +197,11 @@ class _PhotoUploadOptState extends State<PhotoUploadOpt> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          _images.isNotEmpty
+          widget.images.isNotEmpty
               ? Wrap(
                   spacing: 10,
                   runSpacing: 10,
-                  children: List.generate(_images.length, (index) {
+                  children: List.generate(widget.images.length, (index) {
                     return MouseRegion(
                       // onEnter: (_) {
                       //   setState(() {
@@ -145,10 +217,11 @@ class _PhotoUploadOptState extends State<PhotoUploadOpt> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              _showImage(context, _images[index], _removeImage);
+                              _showImage(
+                                  context, widget.images[index], _removeImage);
                             },
                             child: Image.file(
-                              _images[index],
+                              widget.images[index],
                               width: 100,
                               height: 100,
                               fit: BoxFit.cover,
@@ -176,7 +249,8 @@ class _PhotoUploadOptState extends State<PhotoUploadOpt> {
               : const Text("No images selected"),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
+              await _requestCameraPermission();
               _showPicker(context);
             },
             child: const Text('Upload Photo'),

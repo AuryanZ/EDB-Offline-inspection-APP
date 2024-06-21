@@ -12,6 +12,7 @@ class FormControllers {
   final Map<String, bool> checkBoxValues = {};
   final List<Map<String, dynamic>> autoFillControllers = [];
   final List<File> imageList = [];
+  final Map<String, List<File>> imageListControllers = {};
 
   void _addAutoFillController(String tableName, String columnName,
       String refKey, String controllerKey, String controllerType) {
@@ -108,23 +109,42 @@ class FormControllers {
     return checkBoxValues[key]!;
   }
 
+  void setImageListController(String key, List<File> value) {
+    if (imageListControllers[key] == null) {
+      imageListControllers[key] = value;
+    }
+  }
+
+  List<File> getImageListController(String key) {
+    return imageListControllers[key]!;
+  }
+
   void addTableController(
       Map<String, dynamic> row, String parentKey, String index) {
     row.forEach((key, value) {
       String? dbTableName = value["DBTableName"];
       String? dbColumnName = value["DBColumnName"];
       String? refKey = value["RefKey"];
+      String? valueType = value["Type"];
+      if (valueType == null || valueType == "") {
+        throw FormatException("Error: \n Form template with $key has no type.");
+      }
       try {
         final newKey = '$parentKey-$index-$key';
-        if (value["Type"] == "Text" || value["Type"] == "Dropdown") {
+        if (valueType.toLowerCase() == "text" ||
+            valueType.toLowerCase() == "dropdown" ||
+            valueType.toLowerCase() == "number" ||
+            valueType.toLowerCase() == "comment") {
           setTextController(newKey, TextEditingController(),
               tableName: dbTableName, columnName: dbColumnName, refKey: refKey);
-        } else if (value["Type"] == "Date") {
+        } else if (valueType.toLowerCase() == "date") {
           setDateValue(newKey, DateTime.now(),
               tableName: dbTableName, columnName: dbColumnName, refKey: refKey);
-        } else if (value["Type"] == "CheckBox") {
+        } else if (valueType.toLowerCase() == "checkbox") {
           setCheckBoxValue(newKey, false,
               tableName: dbTableName, columnName: dbColumnName, refKey: refKey);
+        } else if (valueType.toLowerCase() == "images") {
+          setImageListController("img-$newKey", []);
         } else {
           throw FormatException(
               "Error: \n Form template with $newKey has unknow type.");
@@ -141,6 +161,7 @@ class FormControllers {
     data.addAll(textControllers.map((key, value) => MapEntry(key, value.text)));
     data.addAll(dateValues);
     data.addAll(checkBoxValues);
+    data.addAll(imageListControllers);
     var sortedData = SplayTreeMap<String, dynamic>.from(data);
     return sortedData;
   }

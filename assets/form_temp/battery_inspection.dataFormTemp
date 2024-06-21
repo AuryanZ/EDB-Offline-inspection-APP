@@ -156,5 +156,15 @@
             "Unit": null,
             "Required": true
         }
+    },
+    
+    "Images": {
+        "Name": {
+            "Label": "Images",
+            "Alert": "",
+            "Hint": "",
+            "SectionView": "Images",
+            "ImageIdex": []
+        }
     }
 }

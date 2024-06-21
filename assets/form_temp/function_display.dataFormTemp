@@ -1,0 +1,267 @@
+{
+    "Title": "Functions Display",
+    "General FormView": {
+        "Name": {
+            "Label": "FormView Example",
+            "Alert": "This is an alert message",
+            "Hint": "This is an Hint message",
+            "SectionView": "FormView"
+        },
+        "FormViewTextInput": {
+            "Label": "FormView Text Input",
+            "Type": "Text",
+            "DbTableName": "",
+            "DbColumnName": "",
+            "Unit": null,
+            "Required": true
+        },
+        "FormViewNumberInput": {
+            "Label": "FormView Number Input",
+            "Type": "Number",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": "cm",
+            "Required": true
+        },
+        "FormViewDropdown": {
+            "Label": "FormView Dropdown",
+            "Type": "Dropdown",
+            "Options": [
+                "Dropdown 1",
+                "Dropdown 2",
+                "Dropdown 3",
+                "Dropdown 4",
+                "Dropdown 5"
+            ],
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        },
+        "FormViewCheckbox": {
+            "Label": "FormView Checkbox",
+            "Type": "Checkbox",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        },
+        "Date": {
+            "Label": "Date",
+            "Type": "Date",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        },
+        "FormViewImg": {
+            "Label": "FormView Image",
+            "Type": "Images",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        },
+        "FormViewComment": {
+            "Label": "FormView Comment",
+            "Type": "Comment",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        }
+    },
+    "TableView": {
+        "Name": {
+            "Label": "TableView Example",
+            "Alert": "",
+            "Hint": "",
+            "SectionView": "TableView",
+            "Expandable": true,
+            "tableIndex": []
+        },
+        "TableViewTextInput": {
+            "Label": "TableView Text Input",
+            "Type": "Text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "TableViewNumberInput": {
+            "Label": "TableView Number Input",
+            "Type": "Number",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": "Per Min",
+            "Required": true
+        },
+        "TableView Dropdown": {
+            "Label": "TableView Dropdown",
+            "Type": "Dropdown",
+            "Options": [
+                "32A",
+                "40A",
+                "63A",
+                "80A",
+                "100A",
+                "160A"
+            ],
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        },
+        "TableViewCheckbox": {
+            "Label": "TableView Checkbox",
+            "Type": "Checkbox",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        },
+        "TableViewDate": {
+            "Label": "TableView Date",
+            "Type": "Date",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        },
+        "TableViewImg": {
+            "Label": "TableView Image",
+            "Type": "Images",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        },
+        "TableViewComment": {
+            "Label": "TableView Comment",
+            "Type": "Comment",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        }
+    },
+    
+    "TableView2": {
+        "Name": {
+            "Label": "TableView 2 Example",
+            "Alert": "",
+            "Hint": "",
+            "SectionView": "TableView",
+            "Expandable": false,
+            "tableIndex": ["Blue", "Red", "Green", "Yellow Pack"]
+        },
+        "TableViewTextInput": {
+            "Label": "TableView Text Input",
+            "Type": "Text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "TableViewNumberInput": {
+            "Label": "TableView Number Input",
+            "Type": "Number",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": "Per Min",
+            "Required": true
+        },
+        "TableView Dropdown": {
+            "Label": "TableView Dropdown",
+            "Type": "Dropdown",
+            "Options": [
+                "32A",
+                "40A",
+                "63A",
+                "80A",
+                "100A",
+                "160A"
+            ],
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        },
+        "TableViewCheckbox": {
+            "Label": "TableView Checkbox",
+            "Type": "Checkbox",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        },
+        "TableViewDate": {
+            "Label": "TableView Date",
+            "Type": "Date",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        },
+        "TableViewImg": {
+            "Label": "TableView Image",
+            "Type": "Images",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        },
+        "TableViewComment": {
+            "Label": "TableView Comment",
+            "Type": "Comment",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        }
+    },
+    "Comments": {
+        "Name": {
+            "Label": "Comments",
+            "Alert": "",
+            "Hint": "",
+            "SectionView": "FormView"
+        },
+        "Comments": {
+            "Label": "Comments",
+            "Type": "Comment",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": true
+        }
+    },
+    "Images": {
+        "Name": {
+            "Label": "Images",
+            "Alert": "",
+            "Hint": "",
+            "SectionView": "Images",
+            "ImageIdex": []
+        }
+    }
+}

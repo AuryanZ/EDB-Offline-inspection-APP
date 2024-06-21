@@ -1,10 +1,9 @@
-import 'package:app/src/models/formControllers.model.dart';
-// import 'package:app/src/widgets/inspection/camera_opt.widget.dart';
+import 'package:app/src/data/formControllers.model.dart';
 import 'package:app/src/widgets/inspection/check_box_opt.widget.dart';
 import 'package:app/src/widgets/inspection/date_time_picker_opt.widget.dart';
 import 'package:app/src/widgets/inspection/drop_down_opt.widget.dart';
-import 'package:app/src/widgets/inspection/image_opt.widget.dart';
 import 'package:app/src/widgets/inspection/input_text_opt.widget.dart';
+import 'package:app/src/widgets/inspection/photo_upload_opt.widget.dart';
 import 'package:flutter/material.dart';
 
 class EntryContainer extends StatefulWidget {
@@ -81,7 +80,7 @@ class _EntryContainerState extends State<EntryContainer> {
   Widget buildFieldText(MapEntry<String, dynamic> field, String parentKey,
       {bool labelDisplay = true}) {
     final fieldData = field.value as Map<String, dynamic>;
-    final fieldType = fieldData['Type'];
+    final String fieldType = fieldData['Type'];
     final fieldLabel = fieldData['Label'];
     final fieldDbTable = fieldData['DbTableName'];
     final fieldDbColumn = fieldData['DbColumnName'];
@@ -101,8 +100,8 @@ class _EntryContainerState extends State<EntryContainer> {
           ]
         : <Widget>[];
 
-    switch (fieldType) {
-      case 'Dropdown':
+    switch (fieldType.toLowerCase()) {
+      case 'dropdown':
         widget.formController.setTextController(
             '$parentKey-$fieldKey', TextEditingController(),
             tableName: fieldDbTable,
@@ -129,7 +128,7 @@ class _EntryContainerState extends State<EntryContainer> {
             ],
           ),
         );
-      case 'Number':
+      case 'number':
         widget.formController.setTextController(
             '$parentKey-$fieldKey', TextEditingController(),
             tableName: fieldDbTable,
@@ -150,7 +149,7 @@ class _EntryContainerState extends State<EntryContainer> {
             ],
           ),
         );
-      case 'Text':
+      case 'text':
         widget.formController.setTextController(
             '$parentKey-$fieldKey', TextEditingController(),
             tableName: fieldDbTable,
@@ -171,7 +170,7 @@ class _EntryContainerState extends State<EntryContainer> {
             ],
           ),
         );
-      case 'Comment':
+      case 'comment':
         widget.formController
             .setTextController('$parentKey-$fieldKey', TextEditingController());
         return TextField(
@@ -184,14 +183,14 @@ class _EntryContainerState extends State<EntryContainer> {
           decoration: InputDecoration(
             border: const OutlineInputBorder(borderSide: BorderSide.none),
             alignLabelWithHint: true,
-            labelText: fieldLabel,
+            labelText: labelDisplay ? fieldLabel : "",
             labelStyle: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
           ),
         );
-      case 'Date':
+      case 'date':
         widget.formController
             .setDateValue('$parentKey-$fieldKey', DateTime.now());
         return Center(
@@ -209,20 +208,26 @@ class _EntryContainerState extends State<EntryContainer> {
             ],
           ),
         );
-      case 'CheckBox':
+      case 'checkbox':
         widget.formController.setCheckBoxValue('$parentKey-$fieldKey', false);
 
         return Center(
           child: CheckBoxOpt(
-            titleTxt: fieldLabel,
+            titleTxt: labelDisplay ? fieldLabel : "",
             onChanged: (value) {
               widget.formController
                   .setCheckBoxValue('$parentKey-$fieldKey', value);
             },
           ),
         );
-      case 'Images':
-      // return const Center(child: cameraOpt());
+      case 'images':
+        widget.formController
+            .setImageListController('img-$parentKey-$fieldKey', []);
+        return Center(
+            child: PhotoUploadOpt(
+          images: widget
+              .formController.imageListControllers['img-$parentKey-$fieldKey']!,
+        ));
 
       default:
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -281,6 +286,7 @@ Tabel View
   Widget buildTableView(Map<String, dynamic> field, String parentKey,
       Map<String, dynamic> tableInfo) {
     final headers = <Widget>[
+      // index column
       Container(),
     ];
     final expandable = tableInfo['Expandable'];
@@ -313,9 +319,10 @@ Tabel View
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontSize: 15,
           ),
-        )
+          // softWrap: false,
+        ),
       ];
       inputs.addAll(rows[i].entries.map((entry) {
         if (entry.value is Map<String, dynamic> &&
@@ -427,6 +434,7 @@ Form View: Generate View.
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> data = Map<String, dynamic>.from(widget.entry.value);
+    final GlobalKey<TooltipState> tooltipkey = GlobalKey<TooltipState>();
     /* Collect Section Data, 
     it contain how the section display and 
     send data to different process by sectionView */
@@ -447,7 +455,12 @@ Form View: Generate View.
           width: widthSize * 0.85,
           child: buildTableView(data, parentKey, tableInfo)));
     } else if (sectionView == "Images") {
-      widgets.add(const PhotoUploadOpt());
+      widget.formController
+          .setImageListController("img-imgSection-$parentKey", []);
+      widgets.add(PhotoUploadOpt(
+        images: widget
+            .formController.imageListControllers["img-imgSection-$parentKey"]!,
+      ));
     } else {
       data.remove('Name');
       widgets.add(buildFormView(data, parentKey, widthSize));
@@ -471,11 +484,17 @@ Form View: Generate View.
               ),
               if (hint != '')
                 Tooltip(
+                  key: tooltipkey,
                   message: hint,
-                  child: const Icon(
-                    Icons.help_outline,
-                    size: 18.0,
-                    color: Colors.grey,
+                  child: InkWell(
+                    onTap: () {
+                      tooltipkey.currentState?.ensureTooltipVisible();
+                    },
+                    child: const Icon(
+                      Icons.help_outline,
+                      size: 18.0,
+                      color: Colors.grey,
+                    ),
                   ),
                 ),
             ],

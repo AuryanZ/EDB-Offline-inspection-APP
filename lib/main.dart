@@ -19,7 +19,7 @@ Future<void> main() async {
   if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
     setWindowTitle('My App');
     setWindowMaxSize(const Size(3840, 2160));
-    setWindowMinSize(const Size(800, 720));
+    setWindowMinSize(const Size(1000, 1000));
   }
 
   runApp(const MyApp());
