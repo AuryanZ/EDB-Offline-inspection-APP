@@ -1,5 +1,8 @@
 {
-    "Title": "Ground Mount Switchgear Annual Inspection",
+    "Title": {
+        "Title": "Ground Mount Switchgear Annual Inspection",
+        "NamingConvention": "GeneralInfo-Job number"
+    },
     "GeneralInfo": {
         "Name": {
             "Label": "General Information",

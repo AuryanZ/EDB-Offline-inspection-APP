@@ -3,21 +3,16 @@ import 'dart:io';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CameraScreen extends StatefulWidget {
-  final List<CameraDescription> cameras;
-  final String cameraInfo;
-  final int cameraIndex;
   final Function(File image) onPictureTaken;
 
   const CameraScreen({
-    Key? key,
+    super.key,
     required this.title,
-    required this.cameras,
-    required this.cameraInfo,
-    required this.cameraIndex,
     required this.onPictureTaken,
-  }) : super(key: key);
+  });
 
   final String title;
 
@@ -27,26 +22,31 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreen extends State<CameraScreen> {
   int _cameraId = -1;
-  int cameraIndex = -1;
+  int _cameraIndex = 0;
   bool _initialized = false;
   bool _previewPaused = false;
+  // bool _isSwitchCamera = false;
   Size? _previewSize;
+
+  List<CameraDescription> _cameras = <CameraDescription>[];
+  String _cameraInfo = 'Unknown \n';
+
   StreamSubscription<CameraErrorEvent>? _errorStreamSubscription;
   StreamSubscription<CameraClosingEvent>? _cameraClosingStreamSubscription;
   final MediaSettings _mediaSettings =
       const MediaSettings(resolutionPreset: ResolutionPreset.max);
 
-  double _currentZoomLevel = 1.0;
-  double _minZoomLevel = 1.0;
-  double _maxZoomLevel = 1.0;
+  // double _currentZoomLevel = 1.0;
+  // double _minZoomLevel = 1.0;
+  // double _maxZoomLevel = 1.0;
 
   XFile? _capturedImage;
 
   @override
   void initState() {
     super.initState();
-    // _initializeCamera();
     WidgetsFlutterBinding.ensureInitialized();
+    _fetchCameras();
   }
 
   @override
@@ -64,27 +64,24 @@ class _CameraScreen extends State<CameraScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _initializeCamera(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: SizedBox(
-                width: 50,
-                height: 50,
-                child: CircularProgressIndicator(),
-              ),
-            );
-          } else {
-            return Scaffold(
-              backgroundColor: Colors.black,
-              body: SafeArea(
-                top: true,
-                child: Center(child: _buildCameraPreview()),
-              ),
-            );
-          }
-        });
+    if (_initialized && _cameraId >= 0) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: SafeArea(
+          top: true,
+          child: Center(child: _buildCameraPreview()),
+        ),
+      );
+    } else {
+      _initializeCamera();
+      return const Center(
+        child: SizedBox(
+          width: 50,
+          height: 50,
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
   }
 
   Widget _buildCameraPreview() {
@@ -164,21 +161,35 @@ class _CameraScreen extends State<CameraScreen> {
           ),
         ),
         // switch camera button
-        if (widget.cameras.length > 1)
-          Positioned(
-            bottom: 30,
-            right: 20,
-            child: Center(
-              child: IconButton(
-                icon: const Icon(
-                  Icons.flip_camera_ios_outlined,
-                  color: Colors.white,
+        // if (_cameras.length > 1)
+        Positioned(
+          bottom: 30,
+          right: 20,
+          child: Center(
+            // child: IconButton(
+            //   icon: const Icon(
+            //     Icons.flip_camera_ios_outlined,
+            //     color: Colors.white,
+            //   ),
+            //   hoverColor: Colors.grey,
+            //   onPressed: _switchCamera,
+            // ),
+            child: OutlinedButton(
+              onPressed: () async {
+                await _switchCamera();
+              },
+              style: ButtonStyle(
+                side: MaterialStateProperty.all(
+                  const BorderSide(style: BorderStyle.none),
                 ),
-                hoverColor: Colors.grey,
-                onPressed: _switchCamera,
+              ),
+              child: const Icon(
+                Icons.flip_camera_ios_outlined,
+                color: Colors.white,
               ),
             ),
           ),
+        ),
         // return button
         Positioned(
           top: 10,
@@ -195,45 +206,79 @@ class _CameraScreen extends State<CameraScreen> {
             },
           ),
         ),
+        // Text(_cameraInfo, style: const TextStyle(color: Colors.white)),
         // zoom slider
-        Positioned(
-          right: 20,
-          top: 20,
-          child: Center(
-            child: Slider(
-              value: _currentZoomLevel,
-              min: _minZoomLevel,
-              max: _maxZoomLevel,
-              onChanged: (value) async {
-                setState(() {
-                  _currentZoomLevel = value;
-                });
-                await CameraPlatform.instance.setZoomLevel(_cameraId, value);
-              },
-            ),
-          ),
-        ),
+        // if (_minZoomLevel != _maxZoomLevel)
+        // Positioned(
+        //   right: 20,
+        //   top: 20,
+        //   child: Center(
+        //     child: Slider(
+        //       value: _currentZoomLevel,
+        //       min: _minZoomLevel,
+        //       max: _maxZoomLevel,
+        //       onChanged: (value) async {
+        //         setState(() {
+        //           _currentZoomLevel = value;
+        //         });
+        //         await CameraPlatform.instance.setZoomLevel(_cameraId, value);
+        //       },
+        //     ),
+        //   ),
+        // ),
+        // Text(_cameraInfo, style: const TextStyle(color: Colors.white)),
       ],
     );
+  }
+
+  Future<void> _fetchCameras() async {
+    String cameraInfo;
+    List<CameraDescription> cameras = <CameraDescription>[];
+
+    int cameraIndex = 0;
+    try {
+      cameras = await CameraPlatform.instance.availableCameras();
+      if (cameras.isEmpty) {
+        cameraInfo = 'No available cameras';
+      } else {
+        cameraIndex = _cameraIndex % cameras.length;
+        cameraInfo = 'Found camera: ${cameras[cameraIndex].name}';
+      }
+    } on PlatformException catch (e) {
+      cameraInfo = 'Failed to get cameras: ${e.code}: ${e.message}';
+    }
+
+    if (mounted) {
+      setState(() {
+        _cameraIndex = cameraIndex;
+        _cameras = cameras;
+        _cameraInfo += " $cameraInfo \n";
+      });
+    }
   }
 
   /// Initializes the camera on the device.
   Future<void> _initializeCamera() async {
     assert(!_initialized);
 
-    if (widget.cameras.isEmpty) {
+    if (_cameras.isEmpty) {
       return;
     }
 
     int cameraId = -1;
     try {
-      cameraIndex = widget.cameraIndex % widget.cameras.length;
-      final CameraDescription camera = widget.cameras[cameraIndex];
+      final int cameraIndex = _cameraIndex % _cameras.length;
+      final CameraDescription camera = _cameras[cameraIndex];
 
       cameraId = await CameraPlatform.instance.createCameraWithSettings(
         camera,
         _mediaSettings,
       );
+
+      // double minZoomLevel =
+      //     await CameraPlatform.instance.getMinZoomLevel(cameraId);
+      // double maxZoomLevel =
+      //     await CameraPlatform.instance.getMaxZoomLevel(cameraId);
 
       unawaited(_errorStreamSubscription?.cancel());
       _errorStreamSubscription = CameraPlatform.instance
@@ -258,17 +303,18 @@ class _CameraScreen extends State<CameraScreen> {
         event.previewHeight,
       );
 
-      _minZoomLevel = await CameraPlatform.instance.getMinZoomLevel(cameraId);
-      _maxZoomLevel = await CameraPlatform.instance.getMaxZoomLevel(cameraId);
-
       if (mounted) {
         setState(() {
           _initialized = true;
           _cameraId = cameraId;
-          _currentZoomLevel = _minZoomLevel;
+          _cameraIndex = cameraIndex;
+          // _currentZoomLevel = _minZoomLevel;
+          // _minZoomLevel = minZoomLevel;
+          // _maxZoomLevel = maxZoomLevel;
+          _cameraInfo += ' Capturing camera: ${camera.name} \n';
         });
       }
-    } on CameraException {
+    } on CameraException catch (e) {
       try {
         if (cameraId >= 0) {
           await CameraPlatform.instance.dispose(cameraId);
@@ -281,20 +327,31 @@ class _CameraScreen extends State<CameraScreen> {
         setState(() {
           _initialized = false;
           _cameraId = -1;
+          _cameraIndex = 0;
           _previewSize = null;
+          // _minZoomLevel = 1.0;
+          // _maxZoomLevel = 1.0;
+          _cameraInfo +=
+              ' Failed to initialize camera: ${e.code}: ${e.description}  \n';
         });
       }
     }
   }
 
   Future<void> _switchCamera() async {
-    debugPrint("Switching camera");
-    if (widget.cameras.length > 1) {
-      // select next index;
-      try {
-        cameraIndex = (widget.cameraIndex + 1) % widget.cameras.length;
-      } on CameraException catch (e) {
-        debugPrint("Error disposing camera: $e");
+    if (_cameras.isNotEmpty) {
+      _cameraIndex = (_cameraIndex + 1) % _cameras.length;
+      if (_initialized && _cameraId >= 0) {
+        await _disposeCurrentCamera();
+        await _fetchCameras();
+        // if (_cameras.isNotEmpty) {
+        //   await _initializeCamera();
+        // }
+      } else {
+        if (_cameraId >= 0) {
+          await _disposeCurrentCamera();
+        }
+        await _fetchCameras();
       }
     }
   }
@@ -349,18 +406,24 @@ class _CameraScreen extends State<CameraScreen> {
   Future<void> _disposeCurrentCamera() async {
     try {
       await CameraPlatform.instance.dispose(_cameraId);
-
       if (mounted) {
         setState(() {
           _initialized = false;
           _cameraId = -1;
           _previewSize = null;
           _previewPaused = false;
+          // _minZoomLevel = 1.0;
+          // _maxZoomLevel = 1.0;
+          _cameraInfo += ' Camera disposed  \n';
         });
       }
     } on CameraException catch (e) {
+      debugPrint("Error disposing camera: $e");
       if (mounted) {
-        debugPrint("Error disposing camera: $e");
+        setState(() {
+          _cameraInfo +=
+              ' Failed to dispose camera: ${e.code}: ${e.description}  \n';
+        });
       }
     }
   }

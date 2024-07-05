@@ -33,11 +33,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Offline Inspection App',
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomePage(title: 'Offline Inspection App'),
+        // '/inspection': (context) =>
+        //     const InspectionFormScreen(title: 'Inspection Form'),
+        // '/camera': (context) => const CameraScreen(title: 'cam',),
+      },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyan),
         useMaterial3: true,
       ),
-      home: const HomePage(title: 'Offline Inspection App'),
+      // home: const HomePage(title: 'Offline Inspection App'),
     );
   }
 }

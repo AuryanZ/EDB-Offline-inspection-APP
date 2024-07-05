@@ -1,4 +1,4 @@
-import 'package:app/src/data/formControllers.model.dart';
+import 'package:app/src/data/formControllers.data.dart';
 import 'package:app/src/widgets/inspection/check_box_opt.widget.dart';
 import 'package:app/src/widgets/inspection/date_time_picker_opt.widget.dart';
 import 'package:app/src/widgets/inspection/drop_down_opt.widget.dart';
@@ -77,20 +77,29 @@ class _EntryContainerState extends State<EntryContainer> {
     }
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    widget.formController.dispose();
+  }
+
+/* ******************Section Field******************* */
   Widget buildFieldText(MapEntry<String, dynamic> field, String parentKey,
       {bool labelDisplay = true}) {
+    // print("$parentKey-${field.key} \n");
     final fieldData = field.value as Map<String, dynamic>;
     final String fieldType = fieldData['Type'];
     final fieldLabel = fieldData['Label'];
     final fieldDbTable = fieldData['DbTableName'];
     final fieldDbColumn = fieldData['DbColumnName'];
     final dbRefKey = fieldData['RefKey'];
+    final isRequired = fieldData['Required'];
     final fieldKey = field.key;
     final children = labelDisplay
         ? <Widget>[
             SizedBox(
               child: Text(
-                fieldLabel,
+                isRequired ? "$fieldLabel*" : "$fieldLabel",
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -222,11 +231,11 @@ class _EntryContainerState extends State<EntryContainer> {
         );
       case 'images':
         widget.formController
-            .setImageListController('img-$parentKey-$fieldKey', []);
+            .setImageListController('$parentKey-$fieldKey', []);
         return Center(
             child: PhotoUploadOpt(
           images: widget
-              .formController.imageListControllers['img-$parentKey-$fieldKey']!,
+              .formController.imageListControllers['$parentKey-$fieldKey']!,
         ));
 
       default:
@@ -404,14 +413,15 @@ Form View: Generate View.
               widthSize));
         } else {
           i--;
-          children.add(
-            Container(
-              padding: const EdgeInsets.all(10.0),
-              margin: const EdgeInsets.all(10.0),
-              width: widthSize * 0.4,
-              alignment: Alignment.centerLeft,
-            ),
-          );
+          children.add(buildContainer(const Text(""), widthSize));
+          // children.add(
+          //   Container(
+          //     padding: const EdgeInsets.all(10.0),
+          //     margin: const EdgeInsets.all(10.0),
+          //     width: widthSize * 0.4,
+          //     alignment: Alignment.centerLeft,
+          //   ),
+          // );
         }
       }
 
@@ -451,20 +461,22 @@ Form View: Generate View.
         'tableIndex': data['Name']['tableIndex']
       };
       data.remove('Name');
-      widgets.add(SizedBox(
-          width: widthSize * 0.85,
-          child: buildTableView(data, parentKey, tableInfo)));
-    } else if (sectionView == "Images") {
-      widget.formController
-          .setImageListController("img-imgSection-$parentKey", []);
-      widgets.add(PhotoUploadOpt(
-        images: widget
-            .formController.imageListControllers["img-imgSection-$parentKey"]!,
-      ));
-    } else {
+      widgets.add(
+          // SizedBox(
+          //     width: widthSize * 0.85,
+          //     child:
+          buildTableView(data, parentKey, tableInfo)
+          // )
+          );
+    } else if (sectionView == "FormView") {
       data.remove('Name');
       widgets.add(buildFormView(data, parentKey, widthSize));
-    }
+    } else if (sectionView == "Images") {
+      widget.formController.setImageListController(parentKey, []);
+      widgets.add(PhotoUploadOpt(
+        images: widget.formController.imageListControllers[parentKey]!,
+      ));
+    } else {}
 
     return Container(
       padding: const EdgeInsets.all(8.0),

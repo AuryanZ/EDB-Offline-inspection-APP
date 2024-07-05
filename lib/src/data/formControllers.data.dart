@@ -8,11 +8,21 @@ import 'package:flutter/widgets.dart';
 class FormControllers {
   final Map<String, TextEditingController> textControllers = {};
   // final Map<String, String> dropdownValues = {};
-  final Map<String, DateTime> dateValues = {};
+  final Map<String, String> dateValues = {};
   final Map<String, bool> checkBoxValues = {};
   final List<Map<String, dynamic>> autoFillControllers = [];
   final List<File> imageList = [];
   final Map<String, List<File>> imageListControllers = {};
+
+  FormControllers();
+  void dispose() {
+    textControllers.clear();
+    dateValues.clear();
+    checkBoxValues.clear();
+    autoFillControllers.clear();
+    imageList.clear();
+    imageListControllers.clear();
+  }
 
   void _addAutoFillController(String tableName, String columnName,
       String refKey, String controllerKey, String controllerType) {
@@ -69,8 +79,6 @@ class FormControllers {
     }
   }
 
-  FormControllers();
-
   void setTextController(String key, TextEditingController value,
       {String? tableName, String? columnName, String? refKey}) {
     if (textControllers[key] == null) {
@@ -87,14 +95,15 @@ class FormControllers {
 
   void setDateValue(String key, DateTime value,
       {String? tableName, String? columnName, String? refKey}) {
-    dateValues[key] = value;
+    dateValues[key] = value.toString();
+    // print(value.toString());
     tableName != null && columnName != null && refKey != null
         ? _addAutoFillController(tableName, columnName, refKey, key, 'Date')
         : null;
   }
 
   DateTime getDateValue(String key) {
-    return dateValues[key]!;
+    return DateTime.parse(dateValues[key]!);
   }
 
   void setCheckBoxValue(String key, bool value,
@@ -144,7 +153,7 @@ class FormControllers {
           setCheckBoxValue(newKey, false,
               tableName: dbTableName, columnName: dbColumnName, refKey: refKey);
         } else if (valueType.toLowerCase() == "images") {
-          setImageListController("img-$newKey", []);
+          setImageListController(newKey, []);
         } else {
           throw FormatException(
               "Error: \n Form template with $newKey has unknow type.");
@@ -162,7 +171,39 @@ class FormControllers {
     data.addAll(dateValues);
     data.addAll(checkBoxValues);
     data.addAll(imageListControllers);
-    var sortedData = SplayTreeMap<String, dynamic>.from(data);
-    return sortedData;
+    Map<String, dynamic> sortedData = SplayTreeMap<String, dynamic>.from(data);
+
+    Map<String, dynamic> finalData = {};
+    sortedData.forEach((key, value) {
+      List<String> keyContainer = key.split('-');
+      if (keyContainer.length == 2) {
+        if (finalData[keyContainer[0]] == null) {
+          finalData[keyContainer[0]] =
+              Map<String, dynamic>.from({keyContainer[1]: value});
+        } else {
+          finalData[keyContainer[0]][keyContainer[1]] = value;
+        }
+      } else if (keyContainer.length == 3) {
+        if (finalData[keyContainer[0]] == null) {
+          finalData[keyContainer[0]] = {
+            "formIndex": [keyContainer[1]],
+            "${keyContainer[2]}-${keyContainer[1]}": value,
+          };
+        } else {
+          if (finalData[keyContainer[0]]["formIndex"] == null) {
+            finalData[keyContainer[0]]["formIndex"] = [keyContainer[1]];
+          } else {
+            if (!finalData[keyContainer[0]]["formIndex"]
+                .contains(keyContainer[1])) {
+              finalData[keyContainer[0]]["formIndex"].add(keyContainer[1]);
+            }
+          }
+          finalData[keyContainer[0]]["${keyContainer[2]}-${keyContainer[1]}"] =
+              value;
+        }
+      }
+    });
+
+    return finalData;
   }
 }

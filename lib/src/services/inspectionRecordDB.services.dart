@@ -1,12 +1,12 @@
 import 'package:app/src/models/inspections.model.dart';
-import 'package:app/src/services/offlineAppDb.services.dart';
+import 'package:app/src/services/inspectionExecute.services.dart';
 
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-class DatabaseService {
+class InspectionRecordDB {
   static const int _version = 1;
-  static const String _dbName = 'offlineApp.db';
+  static const String _dbName = 'inspectionRecord.db';
 
   Database? _database;
   Future<Database> get database async {
@@ -32,7 +32,7 @@ class DatabaseService {
   }
 
   Future<void> _createDb(Database db, int version) async {
-    await OfflineAppDb().createTable(db);
+    await InspectionExecute().createTable(db);
   }
 
   Future<List<Inspections>?> getInspections() async {
@@ -42,8 +42,14 @@ class DatabaseService {
       return Inspections(
         id: maps[i]['id'],
         name: maps[i]['name'],
-        inspectionDate: DateTime.parse(maps[i]['inspectionDate']),
-        lastModifedDate: DateTime.parse(maps[i]['lastModifedDate']),
+        codeKey: maps[i]['codeKey'],
+        code: maps[i]['code'],
+        status: maps[i]['status'] == 1 ? true : false,
+        inspectionDate: maps[i]['inspectionDate'],
+        lastModifedDate: maps[i]['lastModifedDate'],
+        file: maps[i]['file'],
+        // inspectionDate: DateTime.parse(maps[i]['inspectionDate']),
+        // lastModifedDate: DateTime.parse(maps[i]['lastModifedDate']),
         data: maps[i]['data'],
       );
     });

@@ -3,11 +3,11 @@ import 'dart:io';
 
 import 'package:app/src/screens/camera.screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
 // import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 // import 'package:permission_handler/permission_handler.dart';
-import 'package:camera_platform_interface/camera_platform_interface.dart';
+// import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PhotoUploadOpt extends StatefulWidget {
@@ -21,8 +21,8 @@ class PhotoUploadOpt extends StatefulWidget {
 class _PhotoUploadOptState extends State<PhotoUploadOpt> {
   final ImagePicker _picker = ImagePicker();
   String _cameraInfo = 'Unknown';
-  int _cameraIndex = 0;
-  List<CameraDescription> _cameras = <CameraDescription>[];
+  // int _cameraIndex = 0;
+  // List<CameraDescription> _cameras = <CameraDescription>[];
 
 // Pick image from gallery
   Future<void> _pickImage(ImageSource source) async {
@@ -61,33 +61,35 @@ class _PhotoUploadOptState extends State<PhotoUploadOpt> {
       cameraInfo = 'No available cameras';
     }
 
-    List<CameraDescription> cameras = <CameraDescription>[];
+    // List<CameraDescription> cameras = <CameraDescription>[];
 
-    int cameraIndex = 0;
-    try {
-      cameras = await CameraPlatform.instance.availableCameras();
-      if (cameras.isEmpty) {
-        cameraInfo = 'No available cameras';
-      } else {
-        cameraIndex = _cameraIndex % cameras.length;
-        cameraInfo = 'Take a Photo';
-        debugPrint("Found camera: ${cameras[cameraIndex].name}");
-      }
-    } on PlatformException catch (e) {
-      cameraInfo = 'Failed to get cameras: ${e.code}: ${e.message}';
-    }
+    // int cameraIndex = 0;
+    // try {
+    //   cameras = await CameraPlatform.instance.availableCameras();
+    //   if (cameras.isEmpty) {
+    //     cameraInfo = 'No available cameras';
+    //   } else {
+    //     cameraIndex = _cameraIndex % cameras.length;
+    //     cameraInfo = 'Take a Photo';
+    //     debugPrint("Found camera: ${cameras[cameraIndex].name}");
+    //   }
+    // } on PlatformException catch (e) {
+    //   cameraInfo = 'Failed to get cameras: ${e.code}: ${e.message}';
+    // }
 
     if (mounted) {
       setState(() {
-        _cameraIndex = cameraIndex;
-        _cameras = cameras;
+        // _cameraIndex = cameraIndex;
+        // _cameras = cameras;
         _cameraInfo = cameraInfo;
       });
     }
   }
 
 // Show picker
-  void _showPicker(BuildContext context, {bool multiImg = true}) {
+  Future<void> _showPicker({bool multiImg = true}) async {
+    await _requestCameraPermission();
+    if (!mounted) return;
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -116,9 +118,9 @@ class _PhotoUploadOptState extends State<PhotoUploadOpt> {
                       MaterialPageRoute(
                         builder: (context) => CameraScreen(
                             title: 'cam',
-                            cameras: _cameras,
-                            cameraIndex: _cameraIndex,
-                            cameraInfo: _cameraInfo,
+                            // cameras: _cameras,
+                            // cameraIndex: _cameraIndex,
+                            // cameraInfo: _cameraInfo,
                             onPictureTaken: (image) => setState(
                                   () {
                                     widget.images.add(image);
@@ -193,70 +195,74 @@ class _PhotoUploadOptState extends State<PhotoUploadOpt> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          widget.images.isNotEmpty
-              ? Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: List.generate(widget.images.length, (index) {
-                    return MouseRegion(
-                      // onEnter: (_) {
-                      //   setState(() {
-                      //     _hoveredIndex = index;
-                      //   });
-                      // },
-                      // onExit: (_) {
-                      //   setState(() {
-                      //     _hoveredIndex = null;
-                      //   });
-                      // },
-                      child: Stack(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              _showImage(
-                                  context, widget.images[index], _removeImage);
+    return
+        // SizedBox(
+        // child:
+        Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        widget.images.isNotEmpty
+            ? Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: List.generate(widget.images.length, (index) {
+                  return MouseRegion(
+                    // onEnter: (_) {
+                    //   setState(() {
+                    //     _hoveredIndex = index;
+                    //   });
+                    // },
+                    // onExit: (_) {
+                    //   setState(() {
+                    //     _hoveredIndex = null;
+                    //   });
+                    // },
+                    child: Stack(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            _showImage(
+                                context, widget.images[index], _removeImage);
+                          },
+                          child: Image.file(
+                            widget.images[index],
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        // if (_hoveredIndex == index)
+                        Positioned(
+                          // right: 0,
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.delete_outlined,
+                              color: Colors.white,
+                            ),
+                            hoverColor: Colors.red,
+                            onPressed: () {
+                              _removeImage(index);
                             },
-                            child: Image.file(
-                              widget.images[index],
-                              width: 100,
-                              height: 100,
-                              fit: BoxFit.cover,
-                            ),
                           ),
-                          // if (_hoveredIndex == index)
-                          Positioned(
-                            // right: 0,
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.delete_outlined,
-                                color: Colors.white,
-                              ),
-                              hoverColor: Colors.red,
-                              onPressed: () {
-                                _removeImage(index);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-                )
-              : const Text("No images selected"),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () async {
-              await _requestCameraPermission();
-              _showPicker(context);
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              )
+            : const Text("No images selected"),
+        // const SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: ElevatedButton(
+            onPressed: () {
+              _showPicker(multiImg: false);
             },
-            child: const Text('Upload Photo'),
+            child: const Text('Take Photo'),
           ),
-        ],
-      ),
+        ),
+      ],
+      // ),
     );
   }
 }

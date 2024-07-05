@@ -1,5 +1,8 @@
 {
-    "Title": "Pillar Box Inspection",
+    "Title": {
+        "Title": "Pillar Box Inspection",
+        "NamingConvention": "GeneralInfo-Job number"
+    },
     "GeneralInfo": {
         "Name": {
             "Label": "General Information",
@@ -162,7 +165,7 @@
                 "Padlock & Screws"
             ],
             "DbTableName": null,
-            "DbColumnName":null,
+            "DbColumnName": null,
             "RefKey": null,
             "Unit": null,
             "Required": true

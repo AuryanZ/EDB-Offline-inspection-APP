@@ -1,6 +1,9 @@
 {
-    "Title": "Functions Display",
-    "General FormView": {
+    "Title": {
+        "Title": "Functions Display",
+        "NamingConvention": "GeneralFormView-FormViewNumberInput"
+    },
+    "GeneralFormView": {
         "Name": {
             "Label": "FormView Example",
             "Alert": "This is an alert message",

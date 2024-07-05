@@ -1,4 +1,4 @@
-import 'package:app/src/services/database.services.dart';
+// import 'package:app/src/services/inspectionRecordDB.services.dart';
 import 'package:app/src/widgets/home/inspect_selection.widget.dart';
 import 'package:flutter/material.dart';
 
@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
     "Ground Mount Switchgear Annual Inspection",
   ];
 
-  final appDB = DatabaseService();
+  // final appDB = DatabaseService();
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +45,13 @@ class _HomePageState extends State<HomePage> {
           return SingleChildScrollView(
             // padding: const EdgeInsets.all(24),
             child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: viewportConstraints.maxHeight,
-                ),
-                child: InspectionSelection(
-                  buttonNames: buttonNames,
-                )),
+              constraints: BoxConstraints(
+                minHeight: viewportConstraints.maxHeight,
+              ),
+              child: InspectionSelection(
+                buttonNames: buttonNames,
+              ),
+            ),
           );
         }),
       ),
