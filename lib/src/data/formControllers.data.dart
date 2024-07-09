@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:app/src/services/autFillDB.services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 class FormControllers {
   final Map<String, TextEditingController> textControllers = {};
@@ -95,7 +96,8 @@ class FormControllers {
 
   void setDateValue(String key, DateTime value,
       {String? tableName, String? columnName, String? refKey}) {
-    dateValues[key] = value.toString();
+    // dateValues[key] = DateFormat.yMd().format(value);
+    dateValues[key] = DateFormat('dd/MMMM/yyyy').format(value);
     // print(value.toString());
     tableName != null && columnName != null && refKey != null
         ? _addAutoFillController(tableName, columnName, refKey, key, 'Date')

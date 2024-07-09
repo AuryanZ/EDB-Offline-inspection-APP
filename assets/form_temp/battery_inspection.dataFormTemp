@@ -1,7 +1,7 @@
 {
     "Title":  {
         "Title": "Battery Inspection Sheet",
-        "NamingConvention": GeneralInfo-WorkPackNumber"
+        "NamingConvention": "GeneralInfo-WorkPackNumber"
     },
     "GeneralInfo": {
         "Name": {

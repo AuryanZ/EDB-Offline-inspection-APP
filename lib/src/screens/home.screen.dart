@@ -1,5 +1,6 @@
 // import 'package:app/src/services/inspectionRecordDB.services.dart';
-import 'package:app/src/widgets/home/inspect_selection.widget.dart';
+import 'package:app/src/widgets/home/record_status.widget.dart';
+import 'package:app/src/widgets/home/select_inspection.widget.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -35,9 +36,23 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(
+                  Icons.apps_sharp,
+                  size: 35,
+                ),
+                padding: EdgeInsets.zero,
+                tooltip: "New Inspection",
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              );
+            },
+          )),
       body: SafeArea(
         top: true,
         child: LayoutBuilder(builder:
@@ -48,12 +63,32 @@ class _HomePageState extends State<HomePage> {
               constraints: BoxConstraints(
                 minHeight: viewportConstraints.maxHeight,
               ),
-              child: InspectionSelection(
-                buttonNames: buttonNames,
-              ),
+              child: const InspectionRecordStatus(),
             ),
           );
         }),
+      ),
+      drawer: Drawer(
+        width: MediaQuery.of(context).size.width * 0.4,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                image: DecorationImage(
+                  image: AssetImage('assets/img/logo.jpg'),
+                  fit: BoxFit.scaleDown,
+                ),
+              ),
+              child: SizedBox(
+                height: 200,
+                width: 500,
+              ),
+            ),
+            Expanded(child: InspectionSelection(buttonNames: buttonNames)),
+          ],
+        ),
       ),
     );
   }

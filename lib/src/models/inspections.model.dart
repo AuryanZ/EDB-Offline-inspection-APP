@@ -1,13 +1,15 @@
+import 'package:intl/intl.dart';
+
 class Inspections {
   final int? id;
   final String name;
   final String codeKey;
   final String code;
-  final bool status;
+  bool status;
   final DateTime inspectionDate;
-  final DateTime lastModifedDate;
+  DateTime lastModifedDate;
   final String file;
-  final String data;
+  String data;
 
   Inspections({
     this.id,
@@ -44,4 +46,22 @@ class Inspections {
         'file': file,
         'data': data,
       };
+
+  Map<String, dynamic> toListMap() => {
+        'id': id,
+        'name': name,
+        'Job': "$codeKey $code",
+        'status': status ? 'Synced' : 'Unsynced',
+        'inspectionDate':
+            DateFormat('dd-MMMM-yyyy hh:mm').add_jms().format(inspectionDate),
+        'lastModifedDate':
+            DateFormat('dd-MMMM-yyyy hh:mm').add_jms().format(lastModifedDate),
+        // 'inspectionDate': inspectionDate.toString(),
+        // 'lastModifedDate': lastModifedDate.toString(),
+      };
+
+  // Update inspection status
+  void updateStatus({required bool status}) {
+    this.status = status;
+  }
 }

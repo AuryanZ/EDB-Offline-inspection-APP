@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DatePickerExample extends StatefulWidget {
   final ValueChanged<DateTime?> onDateChanged;
@@ -58,10 +59,6 @@ class _DatePickerExampleState extends State<DatePickerExample>
       setState(() {
         _selectedDate.value = newSelectedDate;
         widget.onDateChanged(_selectedDate.value);
-        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //   content: Text(
-        //       'Selected: ${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}'),
-        // ));
       });
     }
   }
@@ -76,8 +73,11 @@ class _DatePickerExampleState extends State<DatePickerExample>
           _restorableDatePickerRouteFuture.present();
         },
         child: Text(
-          'Selected: ${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}',
+          'Selected: ${DateFormat('dd/MMMM/yyyy').format(_selectedDate.value)}',
         ),
+        // child: Text(
+        //   'Selected: ${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}',
+        // ),
       ),
     );
   }

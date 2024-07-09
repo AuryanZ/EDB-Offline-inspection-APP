@@ -17,7 +17,7 @@ Future<void> main() async {
   databaseFactory = databaseFactoryFfi;
 
   if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-    setWindowTitle('My App');
+    setWindowTitle('TLC Offline Inspection App');
     setWindowMaxSize(const Size(3840, 2160));
     setWindowMinSize(const Size(1000, 1000));
   }

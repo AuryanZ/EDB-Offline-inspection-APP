@@ -41,11 +41,14 @@ class Templates {
 
   void setData(String data) {
     inspectionForm = json.decode(data);
-    title = inspectionForm['Title']['Title'];
-    namingConvention = inspectionForm['Title']['NamingConvention'];
-    // print("Title ${inspectionForm['Title']} \n");
+    try {
+      title = inspectionForm['Title']['Title'];
+      namingConvention = inspectionForm['Title']['NamingConvention'];
+    } catch (e) {
+      title = "Template Not Found";
+      namingConvention = "Template Not Found";
+    }
     inspectionForm.remove('Title');
-    // print(data);
   }
 
   List<Widget> getInpectSections() {
@@ -102,6 +105,8 @@ class Templates {
     // print(saveData);
     List<String> fileNaming = namingConvention.split("-");
     String workNumber = "${saveData[fileNaming[0]][fileNaming[1]]}";
+    String msg = "";
+    bool recordStatus = false;
     // print(namingConvention);
     if (workNumber.isEmpty) {
       return Map<String, dynamic>.from({
@@ -114,47 +119,41 @@ class Templates {
     String fileName = "$title ${fileNaming[1]}-$workNumber";
     // print(fileName);
 
-    final inspectionDb = InspectionRecordDB();
+    try {
+      // await platform
+      await LocalStorageService(
+              fileName: fileName, data: json.encode(saveData), dir: "test")
+          .saveData()
+          .then((value) {
+        if (value) {
+          recordStatus = true;
+          msg += "Data synced to online storage \n";
+        } else {
+          throw "Data not synced, Please manually update \n";
+        }
+      });
+    } catch (e) {
+      msg += "${e.toString()} \n";
+    }
 
     try {
+      final inspectionDb = InspectionRecordDB();
       Inspections inspection = Inspections(
           name: title,
-          status: false,
+          status: recordStatus,
           codeKey: fileNaming[1],
           code: workNumber,
           inspectionDate: DateTime.now(),
           lastModifedDate: DateTime.now(),
           file: fileName,
           data: json.encode(saveData));
-      await inspectionDb.database.then((db) {
-        db.insert('Inspections', inspection.toMap());
-      });
-
-      // XFile file = XFile(
-      //     "C:/Users/Rui.Zeng/The Lines Company/Asset Information and Data - Inspection App/TestingFolder");
-      // final directory = await getApplicationDocumentsDirectory();
-      // print(
-      //     "${directory.parent.path}\\The Lines Company\\Asset Information and Data - Inspection App\\TestingFolder");
-
-      // // await directory.create(recursive: true);
-      // File file = File(
-      //     "${directory.parent.parent.path}\\The Lines Company\\Asset Information and Data - Inspection App\\TestingFolder\\$fileName.json");
-      // if (!file.existsSync()) {
-      //   file.createSync(recursive: true);
-      // }
-
-      // file.writeAsString(json.encode(saveData));
-
-      // await platform
-      LocalStorageService(
-              fileName: fileName, data: json.encode(saveData), dir: "test")
-          .saveData();
+      await inspectionDb.insertInspection(inspection);
+      msg += "Data saved to local storage \n";
     } catch (e) {
       return Map<String, dynamic>.from(
           {"state": 400, "msg": Text("Error: $e")});
     }
 
-    return Map<String, dynamic>.from(
-        {"state": 200, "msg": Text("Data Saved in $fileName")});
+    return Map<String, dynamic>.from({"state": 200, "msg": Text(msg)});
   }
 }
