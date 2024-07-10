@@ -230,13 +230,25 @@ class _EntryContainerState extends State<EntryContainer> {
           ),
         );
       case 'images':
+        bool isMultiImg = false;
         widget.formController
             .setImageListController('$parentKey-$fieldKey', []);
+        if (fieldData['Unit'] != null && fieldData['Unit'] == "Multi") {
+          isMultiImg = true;
+        }
         return Center(
-            child: PhotoUploadOpt(
-          images: widget
-              .formController.imageListControllers['$parentKey-$fieldKey']!,
-        ));
+          child: Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            children: [
+              ...children,
+              PhotoUploadOpt(
+                images: widget.formController
+                    .imageListControllers['$parentKey-$fieldKey']!,
+                multiImg: isMultiImg,
+              )
+            ],
+          ),
+        );
 
       default:
         WidgetsBinding.instance.addPostFrameCallback((_) {

@@ -90,6 +90,10 @@ class FormControllers {
     }
   }
 
+  void setTextControllerValue(String key, String value) {
+    textControllers[key]!.text = value;
+  }
+
   TextEditingController getTextController(String key) {
     return textControllers[key]!;
   }

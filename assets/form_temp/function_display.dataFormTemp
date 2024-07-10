@@ -67,7 +67,7 @@
             "DbTableName": null,
             "DbColumnName": null,
             "RefKey": null,
-            "Unit": null,
+            "Unit": "Multi",
             "Required": true
         },
         "FormViewComment": {
@@ -110,12 +110,12 @@
             "Label": "TableView Dropdown",
             "Type": "Dropdown",
             "Options": [
-                "32A",
-                "40A",
-                "63A",
-                "80A",
-                "100A",
-                "160A"
+                "32ATest32A Test32A Test32ATest 32ATest",
+                "40ATest40ATest40ATest40ATest40ATest",
+                "63ATest63ATest63ATest",
+                "80ATest63ATest63ATest",
+                "100ATest63ATest63ATest",
+                "160ATest63ATest63ATest"
             ],
             "DbTableName": null,
             "DbColumnName": null,

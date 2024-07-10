@@ -67,21 +67,19 @@ class _DropdownBoxState extends State<DropdownBox> {
         child: SizedBox(
             width: MediaQuery.of(context).size.width * 0.4,
             child: TypeAheadField<String>(
-              builder: (context, TextEditingController builderController,
-                  focusNode) {
-                return TextField(
-                    controller: controller,
-                    style: const TextStyle(fontSize: 20),
-                    focusNode: focusNode,
-                    decoration: const InputDecoration(
-                      labelText: 'Select',
-                      labelStyle: TextStyle(color: Colors.grey, fontSize: 15),
-                      border: OutlineInputBorder(),
-                      suffixIcon: Icon(
-                        Icons.expand_more,
-                      ),
-                    ));
-              },
+              controller: controller,
+              builder: (context, controller, focusNode) => TextField(
+                  controller: controller,
+                  style: const TextStyle(fontSize: 20),
+                  focusNode: focusNode,
+                  decoration: const InputDecoration(
+                    labelText: 'Select',
+                    labelStyle: TextStyle(color: Colors.grey, fontSize: 15),
+                    border: OutlineInputBorder(),
+                    suffixIcon: Icon(
+                      Icons.expand_more,
+                    ),
+                  )),
               itemBuilder: (context, options) {
                 return ListTile(
                   title: Text(options),
