@@ -28,7 +28,11 @@ class LocalStorageService {
       return false;
     }
     if (!file.existsSync()) {
-      file.createSync(recursive: true);
+      try {
+        file.createSync(recursive: true);
+      } catch (e) {
+        throw "failed to create file $e \n";
+      }
       // return false;
     }
 

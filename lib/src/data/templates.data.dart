@@ -1,5 +1,4 @@
 import 'dart:convert';
-// import 'dart:io';
 import 'package:app/src/data/formControllers.data.dart';
 import 'package:app/src/models/inspections.model.dart';
 import 'package:app/src/services/inspectionRecordDB.services.dart';
@@ -7,8 +6,6 @@ import 'package:app/src/services/localStorage.services.dart';
 import 'package:app/src/widgets/inspection/form_generator.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'package:path_provider/path_provider.dart';
 
 class Templates {
   String inspectionName = '';
@@ -64,15 +61,9 @@ class Templates {
   }
 
   Future<Map<String, dynamic>> saveInspection() async {
-    // Future.delayed(
-    //   const Duration(seconds: 2),
-    // );
     Map<String, dynamic> data = formController.getControllersValue();
-    // print(data);
     Map<String, dynamic> saveData = {};
     inspectionForm.forEach((key, value) {
-      // print("${data[key]} \n");
-      // print("${value["Name"]["SectionView"]} \n");
       if (saveData[key] == null) {
         saveData[key] = Map<String, dynamic>.from({
           "data info": {
@@ -102,12 +93,10 @@ class Templates {
       }
     });
 
-    // print(saveData);
     List<String> fileNaming = namingConvention.split("-");
     String workNumber = "${saveData[fileNaming[0]][fileNaming[1]]}";
     String msg = "";
     bool recordStatus = false;
-    // print(namingConvention);
     if (workNumber.isEmpty) {
       return Map<String, dynamic>.from({
         "state": 400,
@@ -117,7 +106,6 @@ class Templates {
       });
     }
     String fileName = "$title ${fileNaming[1]}-$workNumber";
-    // print(fileName);
 
     try {
       // await platform

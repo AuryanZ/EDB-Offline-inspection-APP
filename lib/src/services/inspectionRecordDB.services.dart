@@ -89,8 +89,11 @@ class InspectionRecordDB {
   //Get inspection List by status
   Future<List<Inspections>?> getInspectionList(bool status) async {
     final db = await database;
+    final searchStatus = status ? 1 : 0;
     final List<Map<String, dynamic>> maps =
-        await db.query('Inspections', where: 'status = ?', whereArgs: [0]);
+        // await db.query('Inspections');
+        await db.query('Inspections',
+            where: 'status = ?', whereArgs: [searchStatus]);
     return List.generate(maps.length, (i) {
       return Inspections(
         id: maps[i]['id'],
