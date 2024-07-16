@@ -44,3 +44,4 @@ app.*.map.json
 
 # sensitive data
 basixDBQuerys/
+LocalDbCreator/

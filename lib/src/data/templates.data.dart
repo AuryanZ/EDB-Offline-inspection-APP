@@ -30,8 +30,10 @@ class Templates {
     String form = "${formName.replaceAll(" ", "_").toLowerCase()}.dataFormTemp";
     inspectionName = formName;
     try {
-      return await rootBundle.loadString('assets/form_temp/$form');
+      // print("assets/form_temp/$formName/$form");
+      return await rootBundle.loadString('assets/form_temp/$formName/$form');
     } catch (e) {
+      // print(e);
       return '{"Title": "Template Not Found"}';
     }
   }

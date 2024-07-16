@@ -53,9 +53,9 @@ class Inspections {
         'Job': "$codeKey $code",
         'status': status ? 'Synced' : 'Unsynced',
         'inspectionDate':
-            DateFormat('dd-MMMM-yyyy hh:mm').add_jms().format(inspectionDate),
+            DateFormat('dd-MMMM-yyyy').add_jms().format(inspectionDate),
         'lastModifedDate':
-            DateFormat('dd-MMMM-yyyy hh:mm').add_jms().format(lastModifedDate),
+            DateFormat('dd-MMMM-yyyy').add_jms().format(lastModifedDate),
         // 'inspectionDate': inspectionDate.toString(),
         // 'lastModifedDate': lastModifedDate.toString(),
       };

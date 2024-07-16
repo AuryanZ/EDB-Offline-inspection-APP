@@ -1,0 +1,105 @@
+{
+    "Title": {
+        "Title": "Asset Amendment Form",
+        "NamingConvention": "GeneralInfo-JobNumber"
+    },
+    "GeneralInfo": {
+        "Name": {
+            "Label": "General Information",
+            "Alert": "",
+            "Hint": "",
+            "SectionView": "FormView"
+        },
+        "JobNumber": {
+            "Label": "Job Number",
+            "Type": "Text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "LocalId": {
+            "Label": "Local Id",
+            "Type": "Text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "SerialNo": {
+            "Label": "Manufacturer Serial Number",
+            "Type": "Text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "Address": {
+            "Label": "Equipment Location",
+            "Type": "Text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "GPS_N": {
+            "Label": "GPS N",
+            "Type": "Text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": false
+        },
+        "GPS_E": {
+            "Label": "GPS E",
+            "Type": "Text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "RefKey": null,
+            "Unit": null,
+            "Required": false
+        },
+        "InspectionDate": {
+            "Label": "Inspection Date",
+            "Type": "Date",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "Inspector": {
+            "Label": "Inspector",
+            "Type": "Text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": true
+        },
+        "LicenseNo": {
+            "Label": "License Number",
+            "Type": "Text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": false
+        },
+        "LeaderName": {
+            "Label": "PM or Team Leader Name",
+            "Type": "Text",
+            "DbTableName": null,
+            "DbColumnName": null,
+            "Unit": null,
+            "Required": false
+        }
+    },
+    "Images": {
+        "Name": {
+            "Label": "Images",
+            "Alert": "",
+            "Hint": "",
+            "SectionView": "Images",
+            "ImageIdex": []
+        }
+    }
+}

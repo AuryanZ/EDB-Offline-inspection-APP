@@ -93,7 +93,8 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/img/
-    - assets/form_temp/
+    - assets/form_temp/Asset Amendment Form/
+    - assets/form_temp/Pillar Box Inspection/
     - assets/autoFill.db
     # - assets/inspectionRecord.db
     # - sqlite3.dll

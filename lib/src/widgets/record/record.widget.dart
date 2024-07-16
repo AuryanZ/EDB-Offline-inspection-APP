@@ -14,10 +14,13 @@ class _RecordTableState extends State<RecordTable> {
   bool isLoading = true;
   Map<int, bool> checkedStatus = {};
 
+  bool currentRecordSearchStatus = false;
+
   @override
   void initState() {
     super.initState();
     _loadUnsyncedInspections();
+    currentRecordSearchStatus = false;
   }
 
   @override
@@ -52,7 +55,10 @@ class _RecordTableState extends State<RecordTable> {
 
   @override
   Widget build(BuildContext context) {
-    _loadUnsyncedInspections();
+    if (currentRecordSearchStatus != widget.isSyncedStatus) {
+      currentRecordSearchStatus = widget.isSyncedStatus;
+      _loadUnsyncedInspections();
+    }
     return Container(
         constraints:
             BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
@@ -75,36 +81,44 @@ class _RecordTableState extends State<RecordTable> {
                                   columnSpacing: 5,
                                   border: TableBorder.all(),
                                   showBottomBorder: true,
+                                  headingTextStyle: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    // fontSize: 20,
+                                    color: Colors.black,
+                                    overflow: TextOverflow.fade,
+                                  ),
                                   columns: const <DataColumn>[
                                     DataColumn(
                                         label: Text(
                                       'Name',
-                                      softWrap: true,
+                                      softWrap: false,
                                     )),
                                     DataColumn(
                                         label: Text(
                                       'Job',
-                                      softWrap: true,
+                                      softWrap: false,
                                     )),
                                     DataColumn(
                                         label: Text(
                                       'Status',
-                                      softWrap: true,
+                                      softWrap: false,
                                     )),
                                     DataColumn(
                                         label: Text(
                                       'Inspection Date',
-                                      softWrap: true,
+                                      softWrap: false,
+                                      maxLines: 1,
                                     )),
                                     DataColumn(
                                         label: Text(
                                       'Last Modified Date',
-                                      softWrap: true,
+                                      softWrap: false,
+                                      maxLines: 1,
                                     )),
                                     DataColumn(
                                         label: Text(
                                       'Auction',
-                                      softWrap: true,
+                                      softWrap: false,
                                     )),
                                   ],
                                   rows: inspectionList.map((inspection) {
@@ -141,6 +155,7 @@ class _RecordTableState extends State<RecordTable> {
                                           Text(
                                             inspection['inspectionDate'],
                                             softWrap: true,
+                                            maxLines: 2,
                                           ),
                                         ),
                                         DataCell(
@@ -214,7 +229,7 @@ class _RecordTableState extends State<RecordTable> {
                           ),
                 const Divider(
                   color: Colors.grey,
-                  thickness: 2,
+                  thickness: 1,
                 ),
                 widget.isSyncedStatus
                     ? const Text("")
