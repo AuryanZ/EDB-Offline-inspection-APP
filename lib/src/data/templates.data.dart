@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:app/src/data/formControllers.data.dart';
 import 'package:app/src/models/inspections.model.dart';
+import 'package:app/src/services/autFillDB.services.dart';
 import 'package:app/src/services/inspectionRecordDB.services.dart';
 import 'package:app/src/services/localStorage.services.dart';
 import 'package:app/src/widgets/inspection/form_generator.widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class Templates {
+  List<String> inspectionNames = [];
   String inspectionName = '';
   Map<String, dynamic> inspectionForm = {};
   String title = '';
@@ -26,28 +27,73 @@ class Templates {
     title = '';
   }
 
-  Future<String> loadForm(String formName) async {
-    String form = "${formName.replaceAll(" ", "_").toLowerCase()}.dataFormTemp";
-    inspectionName = formName;
-    try {
-      // print("assets/form_temp/$formName/$form");
-      return await rootBundle.loadString('assets/form_temp/$formName/$form');
-    } catch (e) {
-      // print(e);
-      return '{"Title": "Template Not Found"}';
+  String _capitalizeFirstLetterOfEachWord(String input) {
+    if (input.isEmpty) {
+      return input;
     }
+
+    return input.split(' ').map((word) {
+      if (word.isEmpty) {
+        return word;
+      }
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' ');
   }
 
-  void setData(String data) {
+  Future<String> setInspectionNames() async {
+    AutoFillDbServices buttonDb = AutoFillDbServices();
+    await buttonDb
+        .getTable("workTemplates")
+        .then((value) => value?.forEach((element) {
+              inspectionNames
+                  .add(_capitalizeFirstLetterOfEachWord(element["name"]));
+            }));
+    inspectionNames.sort();
+    buttonDb.dispose();
+    if (inspectionNames.isEmpty) {
+      return Future.value("No names set");
+    }
+
+    return Future.value("Names set");
+  }
+
+  // get inspection names
+  List<String> getInspectionNames() {
+    return inspectionNames;
+  }
+
+  Future<String> loadForm(String formName) async {
+    // await Future.delayed(const Duration(seconds: 5));
+    AutoFillDbServices formDb = AutoFillDbServices();
+    inspectionName = formName;
+
+    String data;
+    try {
+      data = await formDb.getData(
+          "workTemplates", "template", formName.toLowerCase(), "name");
+    } catch (e) {
+      data = '{"Title": "Template Not Found"}';
+    }
+
+    if (formName == "Zone Sub Inspection") {
+      return data;
+    }
+    _setData(data);
+
+    return '{"Title": "Load Form Completed"}';
+  }
+
+  void _setData(String data) {
     inspectionForm = json.decode(data);
     try {
       title = inspectionForm['Title']['Title'];
       namingConvention = inspectionForm['Title']['NamingConvention'];
+      inspectionForm.remove('Title');
     } catch (e) {
       title = "Template Not Found";
-      namingConvention = "Template Not Found";
+      namingConvention = "Template not Found";
+      inspectionForm = {};
     }
-    inspectionForm.remove('Title');
   }
 
   List<Widget> getInpectSections() {
@@ -59,6 +105,7 @@ class Templates {
         formController: formController,
       ));
     }
+
     return children;
   }
 

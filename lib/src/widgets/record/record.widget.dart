@@ -1,3 +1,4 @@
+import 'package:app/src/models/progressIndicator.model.dart';
 import 'package:app/src/services/inspectionRecordDB.services.dart';
 import 'package:flutter/material.dart';
 
@@ -49,6 +50,7 @@ class _RecordTableState extends State<RecordTable> {
     // await Future.delayed(const Duration(seconds: 5));
     setState(() {
       inspectionList = unsyncedInspections;
+
       isLoading = false;
     });
   }
@@ -56,8 +58,12 @@ class _RecordTableState extends State<RecordTable> {
   @override
   Widget build(BuildContext context) {
     if (currentRecordSearchStatus != widget.isSyncedStatus) {
-      currentRecordSearchStatus = widget.isSyncedStatus;
-      _loadUnsyncedInspections();
+      // make sure to only load latest search status data
+      if (!isLoading) {
+        currentRecordSearchStatus = widget.isSyncedStatus;
+        isLoading = true;
+        _loadUnsyncedInspections();
+      }
     }
     return Container(
         constraints:
@@ -69,7 +75,13 @@ class _RecordTableState extends State<RecordTable> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 isLoading
-                    ? const CircularProgressIndicator()
+                    ? const CustomProgressIndicator(
+                        // size: 10,
+                        color: Colors.blue,
+                        duration: Duration(seconds: 2),
+                        strokeWidth: 4.0,
+                        type: ProgressIndicatorType.circular,
+                      )
                     : inspectionList.isEmpty
                         ? const Text("No unsynced inspections found.")
                         : Expanded(

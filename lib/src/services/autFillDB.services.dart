@@ -56,9 +56,12 @@ class AutoFillDbServices {
       String tableName, String columnName, String value, String refKey) async {
     final db = await _getDB();
 
+    // print(
+    //     "tableName: $tableName, columnName: $columnName, value: $value, refKey: $refKey");
+
     final data = await db.query(tableName,
         columns: [columnName], where: '$refKey = ?', whereArgs: [value]);
-    // print(data.first[columnName]);
+    // print(data);
     return data.first[columnName];
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:app/src/models/progressIndicator.model.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -75,10 +76,12 @@ class _CameraScreen extends State<CameraScreen> {
     } else {
       _initializeCamera();
       return const Center(
-        child: SizedBox(
-          width: 50,
-          height: 50,
-          child: CircularProgressIndicator(),
+        child: CustomProgressIndicator(
+          // size: 50,
+          color: Colors.grey,
+          duration: Duration(seconds: 2),
+          strokeWidth: 4.0,
+          type: ProgressIndicatorType.circular,
         ),
       );
     }

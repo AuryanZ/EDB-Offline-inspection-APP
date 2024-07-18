@@ -2,41 +2,18 @@ import 'package:app/src/widgets/home/inspection_record.widget.dart';
 import 'package:app/src/widgets/home/select_inspection.widget.dart';
 import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final buttonNames = [
-    "Function Display",
-    "Asset Amendment Form",
-    "Defect Report (Emergent Sheet)",
-    "Job Sheet (UAT)",
-    "Battery Inspection",
-    "Cable Inspection",
-    "Ground Mount TX Inspection",
-    "IED Inspection",
-    "Pole Inspection",
-    "Pillar Box Inspection",
-    "SWER Sub Inspection",
-    "Voltage Reg Inspection",
-    "Zone Sub Inspection",
-    "Ground Mount Switchgear Annual Inspection",
-  ];
-
-  // final appDB = DatabaseService();
-
-  @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
+          title: Text(title),
           leading: Builder(
             builder: (BuildContext context) {
               return IconButton(
@@ -61,6 +38,7 @@ class _HomePageState extends State<HomePage> {
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: viewportConstraints.maxHeight,
+                minWidth: viewportConstraints.maxWidth,
               ),
               child: const InspectionRecord(),
             ),
@@ -72,20 +50,20 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
+            DrawerHeader(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 image: DecorationImage(
                   image: AssetImage('assets/img/logo.jpg'),
-                  fit: BoxFit.scaleDown,
+                  fit: BoxFit.contain,
                 ),
               ),
               child: SizedBox(
-                height: 200,
-                width: 500,
+                height: screenWidth,
+                width: screenWidth,
               ),
             ),
-            Expanded(child: InspectionSelection(buttonNames: buttonNames)),
+            const Expanded(child: InspectionSelection()),
           ],
         ),
       ),

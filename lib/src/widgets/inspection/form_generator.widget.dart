@@ -51,8 +51,8 @@ class _EntryContainerState extends State<EntryContainer> {
   @override
   void initState() {
     super.initState();
-    final sectionView = widget.entry.value['Name']['SectionView'];
-    final tableIndex = widget.entry.value['Name']['tableIndex'];
+    final sectionView = widget.entry.value['Name']?['SectionView'] ?? "";
+    final tableIndex = widget.entry.value['Name']?['tableIndex'] ?? "";
     if (sectionView == "TableView") {
       // initial table rows, if tableIndex is empty, set index start from 0
       rows = [];
@@ -453,27 +453,20 @@ Form View: Generate View.
     return Column(children: widgets);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    Map<String, dynamic> data = Map<String, dynamic>.from(widget.entry.value);
-    final GlobalKey<TooltipState> tooltipkey = GlobalKey<TooltipState>();
-    /* Collect Section Data, 
-    it contain how the section display and 
-    send data to different process by sectionView */
-    final subTitle = data['Name']['Label'];
-    final alert = data['Name']['Alert'];
-    final hint = data['Name']['Hint'];
-    final sectionView = data['Name']['SectionView'];
-    final widgets = <Widget>[];
-    final widthSize = MediaQuery.of(context).size.width;
-    final parentKey = widget.entry.key;
+  List<Widget> viewControlle(dynamic sectionView, Map<String, dynamic> data,
+      double widthSize, String parentKey) {
+    final view = <Widget>[];
+    if (sectionView == null) {
+      throw "SectionView is empty";
+    }
+
     if (sectionView == "TableView") {
       final Map<String, dynamic> tableInfo = {
         'Expandable': data['Name']['Expandable'],
         'tableIndex': data['Name']['tableIndex']
       };
       data.remove('Name');
-      widgets.add(
+      view.add(
           // SizedBox(
           //     width: widthSize * 0.85,
           //     child:
@@ -482,13 +475,37 @@ Form View: Generate View.
           );
     } else if (sectionView == "FormView") {
       data.remove('Name');
-      widgets.add(buildFormView(data, parentKey, widthSize));
+      view.add(buildFormView(data, parentKey, widthSize));
     } else if (sectionView == "Images") {
       widget.formController.setImageListController(parentKey, []);
-      widgets.add(PhotoUploadOpt(
+      view.add(PhotoUploadOpt(
         images: widget.formController.imageListControllers[parentKey]!,
       ));
     } else {}
+    return view;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Map<String, dynamic> data = Map<String, dynamic>.from(widget.entry.value);
+    final GlobalKey<TooltipState> tooltipkey = GlobalKey<TooltipState>();
+    /* Collect Section Data, 
+    it contain how the section display and 
+    send data to different process by sectionView */
+    final subTitle = data['Name']?['Label'] ?? "";
+    final alert = data['Name']?['Alert'] ?? "";
+    final hint = data['Name']?['Hint'] ?? "";
+    final widgets = <Widget>[];
+
+    try {
+      final sectionView = data['Name']['SectionView'];
+      final widthSize = MediaQuery.of(context).size.width;
+      final parentKey = widget.entry.key;
+      widgets.addAll(viewControlle(sectionView, data, widthSize, parentKey));
+    } catch (e) {
+      widgets.add(Text("Error: $e"));
+      return widgets[0];
+    }
 
     return Container(
       padding: const EdgeInsets.all(8.0),

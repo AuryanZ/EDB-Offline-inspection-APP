@@ -1,46 +1,47 @@
 import 'package:app/src/data/templates.data.dart';
-// import 'package:app/src/services/inspectionRecordDB.services.dart';
+import 'package:app/src/models/progressIndicator.model.dart';
 import 'package:app/src/widgets/inspection/save_inspection_opt.widget.dart';
 import 'package:flutter/material.dart';
 
-class InspectionFormScreen extends StatefulWidget {
-  const InspectionFormScreen({super.key, required this.title});
+class InspectionFormScreen extends StatelessWidget {
+  const InspectionFormScreen(
+      {super.key, required this.title, required this.template});
 
   final String title;
+  final Templates template;
 
-  @override
-  State<InspectionFormScreen> createState() => _InspectionFormScreen();
-}
-
-class _InspectionFormScreen extends State<InspectionFormScreen> {
-  // final appDB = InspectionRecordDB();
-  Templates template = Templates();
-  bool isSuccess = false;
-
+  // bool isSuccess = false;
   @override
   Widget build(BuildContext context) {
+    // Templates template = Templates(inspectionNames: []);
+
     return FutureBuilder<String>(
-      future: template.loadForm(widget.title),
+      future: template.loadForm(title),
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return Scaffold(
+              appBar: AppBar(
+                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                title: Text(title),
+              ),
+              body: const CustomProgressIndicator(
+                // size: 200,
+                color: Colors.grey,
+                duration: Duration(seconds: 5),
+                strokeWidth: 3.0,
+                type: ProgressIndicatorType.circular,
+              ));
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
-          template.setData(snapshot.data!);
-
           return Scaffold(
             appBar: AppBar(
               backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              title: Text(widget.title),
+              title: Text(title),
             ),
             body: LayoutBuilder(builder:
                 (BuildContext context, BoxConstraints viewportConstraints) {
               return SingleChildScrollView(
-                // child: ConstrainedBox(
-                //   constraints: BoxConstraints(
-                //     minHeight: viewportConstraints.maxHeight,
-                //   ),
                 child: Column(
                   children: [
                     Center(
@@ -54,7 +55,6 @@ class _InspectionFormScreen extends State<InspectionFormScreen> {
                     Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Column(children: template.getInpectSections()),
-                      // children: getInpectSections(template.data)),
                     ),
                     Divider(
                       color: Theme.of(context).colorScheme.onPrimary,
@@ -69,7 +69,6 @@ class _InspectionFormScreen extends State<InspectionFormScreen> {
                     ),
                   ],
                 ),
-                // ),
               );
             }),
           );

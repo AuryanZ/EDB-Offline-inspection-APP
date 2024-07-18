@@ -1,4 +1,5 @@
 import 'package:app/src/data/templates.data.dart';
+import 'package:app/src/models/progressIndicator.model.dart';
 import 'package:flutter/material.dart';
 
 class SaveButtonWidget extends StatefulWidget {
@@ -30,7 +31,7 @@ class _SaveButtonWidgetState extends State<SaveButtonWidget> {
     );
 
     Map<String, dynamic> success = await Future.delayed(
-      const Duration(seconds: 2),
+      const Duration(seconds: 1),
       () => widget.template.saveInspection(),
     );
     // print(success['state']);
@@ -80,7 +81,13 @@ class _SaveButtonWidgetState extends State<SaveButtonWidget> {
                         ? const SizedBox(
                             width: 20,
                             height: 24,
-                            child: CircularProgressIndicator(strokeWidth: 2.0),
+                            child: CustomProgressIndicator(
+                              size: 20,
+                              color: Colors.blue,
+                              duration: Duration(seconds: 2),
+                              strokeWidth: 2.0,
+                              type: ProgressIndicatorType.circular,
+                            ),
                           )
                         : _dialogMessage,
                     actions: (!isSaving && !isSuccess)
