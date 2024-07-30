@@ -1,4 +1,4 @@
-import 'package:app/src/models/progressIndicator.model.dart';
+import 'package:app/src/utils/progressIndicator.utils.dart';
 import 'package:app/src/services/inspectionRecordDB.services.dart';
 import 'package:flutter/material.dart';
 

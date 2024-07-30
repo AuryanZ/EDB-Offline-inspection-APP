@@ -1,5 +1,5 @@
 import 'package:app/src/widgets/home/inspection_record.widget.dart';
-import 'package:app/src/widgets/home/select_inspection.widget.dart';
+import 'package:app/src/widgets/home/sideManue/select_inspection.widget.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {

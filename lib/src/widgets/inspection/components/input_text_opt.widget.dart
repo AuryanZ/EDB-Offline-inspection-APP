@@ -19,10 +19,16 @@ class InputBoxOpt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = this.label;
-    final unit = this.unit;
+    dynamic unit = this.unit;
     final typeInput = this.typeInput;
     final controller = this.controller;
     if (typeInput == 'number') {
+      if (unit != null && unit.startsWith("sp-")) {
+        // process for special constant
+        var hexNumber = int.parse(unit.replaceAll("sp-0x", ""), radix: 16);
+        unit = String.fromCharCode(hexNumber);
+        // unit = "$unit";
+      }
       return SizedBox(
         width: MediaQuery.of(context).size.width * 0.50,
         child: TextField(

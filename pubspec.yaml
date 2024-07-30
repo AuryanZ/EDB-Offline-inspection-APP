@@ -52,6 +52,7 @@ dependencies:
   camera_windows: ^0.2.2
   camera_platform_interface: ^2.7.4
   permission_handler: ^11.3.1
+  provider: ^6.1.2
 
 flutter_launcher_icons:
   background_color_ios: "#ffffff"

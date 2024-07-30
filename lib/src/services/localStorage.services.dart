@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
@@ -6,10 +5,12 @@ import 'package:path_provider/path_provider.dart';
 class LocalStorageService {
   final String fileName;
   final String dir;
-  final String data;
+  final String dataJsonString;
 
   LocalStorageService(
-      {required this.fileName, required this.dir, required this.data});
+      {required this.fileName,
+      required this.dir,
+      required this.dataJsonString});
 
   Future<File?> _getDir() async {
     final directory = await getApplicationDocumentsDirectory();
@@ -36,7 +37,7 @@ class LocalStorageService {
       // return false;
     }
 
-    file.writeAsString(json.encode(data));
+    file.writeAsString(dataJsonString);
     return true;
   }
 }

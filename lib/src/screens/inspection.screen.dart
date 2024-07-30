@@ -1,6 +1,6 @@
 import 'package:app/src/data/templates.data.dart';
-import 'package:app/src/models/progressIndicator.model.dart';
-import 'package:app/src/widgets/inspection/save_inspection_opt.widget.dart';
+import 'package:app/src/utils/progressIndicator.utils.dart';
+import 'package:app/src/widgets/inspection/save_inspection.widget.dart';
 import 'package:flutter/material.dart';
 
 class InspectionFormScreen extends StatelessWidget {
@@ -10,11 +10,8 @@ class InspectionFormScreen extends StatelessWidget {
   final String title;
   final Templates template;
 
-  // bool isSuccess = false;
   @override
   Widget build(BuildContext context) {
-    // Templates template = Templates(inspectionNames: []);
-
     return FutureBuilder<String>(
       future: template.loadForm(title),
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {

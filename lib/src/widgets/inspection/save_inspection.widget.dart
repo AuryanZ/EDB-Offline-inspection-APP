@@ -1,5 +1,5 @@
 import 'package:app/src/data/templates.data.dart';
-import 'package:app/src/models/progressIndicator.model.dart';
+import 'package:app/src/utils/progressIndicator.utils.dart';
 import 'package:flutter/material.dart';
 
 class SaveButtonWidget extends StatefulWidget {

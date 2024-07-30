@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class DatePickerExample extends StatefulWidget {
+class DatePickerDialogOverride extends StatefulWidget {
   final ValueChanged<DateTime?> onDateChanged;
   final String? restorationId;
-  const DatePickerExample(
+  const DatePickerDialogOverride(
       {super.key, this.restorationId, required this.onDateChanged});
 
   @override
-  State<DatePickerExample> createState() => _DatePickerExampleState();
+  State<DatePickerDialogOverride> createState() =>
+      _DatePickerDialogOverrideState();
 }
 
 /// RestorationProperty objects can be used because of RestorationMixin.
-class _DatePickerExampleState extends State<DatePickerExample>
+class _DatePickerDialogOverrideState extends State<DatePickerDialogOverride>
     with RestorationMixin {
   @override
   String? get restorationId => widget.restorationId;

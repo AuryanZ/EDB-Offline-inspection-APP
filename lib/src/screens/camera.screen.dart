@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:app/src/models/progressIndicator.model.dart';
+import 'package:app/src/utils/progressIndicator.utils.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -323,7 +323,8 @@ class _CameraScreen extends State<CameraScreen> {
           await CameraPlatform.instance.dispose(cameraId);
         }
       } on CameraException catch (e) {
-        debugPrint('Failed to dispose camera: ${e.code}: ${e.description}');
+        debugPrint(
+            'Failed to dispose camera: ${e.code}: ${e.description} $_cameraInfo');
       }
 
       if (mounted) {

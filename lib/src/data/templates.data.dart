@@ -22,6 +22,7 @@ class Templates {
 
   void dispose() {
     formController.dispose();
+    inspectionNames.clear();
     inspectionName = '';
     inspectionForm.clear();
     title = '';
@@ -98,6 +99,7 @@ class Templates {
 
   List<Widget> getInpectSections() {
     final children = <Widget>[];
+    // print(inspectionForm);
     for (var entry in inspectionForm.entries) {
       // print("entry: $entry \n");
       children.add(EntryContainer(
@@ -109,38 +111,51 @@ class Templates {
     return children;
   }
 
-  Future<Map<String, dynamic>> saveInspection() async {
-    Map<String, dynamic> data = formController.getControllersValue();
+  Map<String, dynamic> _processSaveData(
+      Map<String, dynamic> data, Map<String, dynamic> inspectionForm) {
+    // Map<String, dynamic> data = formController.getControllersValue();
     Map<String, dynamic> saveData = {};
+
     inspectionForm.forEach((key, value) {
-      if (saveData[key] == null) {
-        saveData[key] = Map<String, dynamic>.from({
-          "data info": {
-            "Label": value["Name"]["Label"],
-            "SectionView": value["Name"]["SectionView"],
-            "TableIndex": value["Name"]["SectionView"] == "TableView"
-                ? data[key]["formIndex"]
-                : "",
-          }
-        });
-      }
-      if (value["Name"]["SectionView"] == "TableView") {
-        data[key]["formIndex"].forEach((index) {
-          saveData[key]["$index"] = {};
-          value.forEach((key2, value2) {
-            if (key2 != "Name") {
-              saveData[key]["$index"][key2] = data[key]["$key2-$index"];
+      if (key != "Name") {
+        if (saveData[key] == null) {
+          saveData[key] = Map<String, dynamic>.from({
+            "data info": {
+              "Label": value["Name"]["Label"],
+              "SectionView": value["Name"]["SectionView"],
+              "TableIndex": value["Name"]["SectionView"] == "TableView"
+                  ? data[key]["formIndex"]
+                  : "",
             }
           });
-        });
-      } else {
-        value.forEach((key2, value2) {
-          if (key2 != "Name") {
-            saveData[key][key2] = data[key][key2];
-          }
-        });
+        }
+        if (value["Name"]?["SectionView"] == "TableView") {
+          data[key]["formIndex"].forEach((index) {
+            saveData[key]["$index"] = {};
+            value.forEach((key2, value2) {
+              if (key2 != "Name") {
+                saveData[key]["$index"][key2] = data[key]["$key2-$index"];
+              }
+            });
+          });
+        } else if (value["Name"]["SectionView"] == "SubFormView") {
+          saveData[key].addAll(_processSaveData(data, value));
+        } else {
+          value.forEach((key2, value2) {
+            if (key2 != "Name") {
+              saveData[key][key2] = data[key][key2];
+            }
+          });
+        }
       }
     });
+
+    return saveData;
+  }
+
+  Future<Map<String, dynamic>> saveInspection() async {
+    final Map<String, dynamic> saveData =
+        _processSaveData(formController.getControllersValue(), inspectionForm);
 
     List<String> fileNaming = namingConvention.split("-");
     String workNumber = "${saveData[fileNaming[0]][fileNaming[1]]}";
@@ -159,7 +174,9 @@ class Templates {
     try {
       // await platform
       await LocalStorageService(
-              fileName: fileName, data: json.encode(saveData), dir: "test")
+              fileName: fileName,
+              dataJsonString: jsonEncode(saveData),
+              dir: "test")
           .saveData()
           .then((value) {
         if (value) {

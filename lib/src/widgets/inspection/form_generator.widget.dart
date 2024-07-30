@@ -1,9 +1,8 @@
 import 'package:app/src/data/formControllers.data.dart';
-import 'package:app/src/widgets/inspection/check_box_opt.widget.dart';
-import 'package:app/src/widgets/inspection/date_time_picker_opt.widget.dart';
-import 'package:app/src/widgets/inspection/drop_down_opt.widget.dart';
-import 'package:app/src/widgets/inspection/input_text_opt.widget.dart';
-import 'package:app/src/widgets/inspection/photo_upload_opt.widget.dart';
+import 'package:app/src/widgets/inspection/build_views/dialog_view_opt.widget.dart';
+import 'package:app/src/widgets/inspection/build_views/form_view_opt.widget.dart';
+import 'package:app/src/widgets/inspection/build_views/table_view_opt.widget.dart';
+import 'package:app/src/widgets/inspection/components/photo_upload_opt.widget.dart';
 import 'package:flutter/material.dart';
 
 class EntryContainer extends StatefulWidget {
@@ -17,64 +16,10 @@ class EntryContainer extends StatefulWidget {
   State<EntryContainer> createState() => _EntryContainerState();
 }
 
-/* build a empty container for odd number of items in section to lock UI space */
-Widget buildContainer(Widget child, double widthSize) {
-  return Container(
-    padding: const EdgeInsets.all(8.0),
-    margin: const EdgeInsets.all(8.0),
-    child: SizedBox(
-      width: widthSize * 0.4,
-      child: child,
-    ),
-  );
-}
-
 class _EntryContainerState extends State<EntryContainer> {
-  List<Map<String, dynamic>> rows = [];
-/* addTableRow Only use for Defualt Table Index Which is "tableIndex": []" 
-  Add new row to table view.
-  Add new Controller to FormController.
-  contraller style is "Section Name-index-fieldKey"
-*/
-  void addTableRow() {
-    setState(() {
-      final newRow = Map<String, dynamic>.from(widget.entry.value)
-        ..remove('Name');
-      final parentKey = widget.entry.key;
-      int newIndex = rows.length;
-      widget.formController
-          .addTableController(newRow, parentKey, newIndex.toString());
-      rows.add(newRow);
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    final sectionView = widget.entry.value['Name']?['SectionView'] ?? "";
-    final tableIndex = widget.entry.value['Name']?['tableIndex'] ?? "";
-    if (sectionView == "TableView") {
-      // initial table rows, if tableIndex is empty, set index start from 0
-      rows = [];
-      final parentKey = widget.entry.key;
-      if (tableIndex.length > 0) {
-        for (int i = 0; i <= tableIndex.length; i++) {
-          var index = i.toString();
-          if (tableIndex.length >= 1) {
-            if (i == tableIndex.length) {
-              break;
-            }
-            index = tableIndex[i];
-          }
-          rows.add(
-              Map<String, dynamic>.from(widget.entry.value)..remove('Name'));
-          widget.formController.addTableController(rows[i], parentKey, index);
-        }
-      } else {
-        rows.add(Map<String, dynamic>.from(widget.entry.value)..remove('Name'));
-        widget.formController.addTableController(rows[0], parentKey, '0');
-      }
-    }
   }
 
   @override
@@ -84,376 +29,23 @@ class _EntryContainerState extends State<EntryContainer> {
   }
 
 /* ******************Section Field******************* */
-  Widget buildFieldText(MapEntry<String, dynamic> field, String parentKey,
-      {bool labelDisplay = true}) {
-    // print("$parentKey-${field.key} \n");
-    final fieldData = field.value as Map<String, dynamic>;
-    final String fieldType = fieldData['Type'];
-    final fieldLabel = fieldData['Label'];
-    final fieldDbTable = fieldData['DbTableName'];
-    final fieldDbColumn = fieldData['DbColumnName'];
-    final dbRefKey = fieldData['RefKey'];
-    final isRequired = fieldData['Required'];
-    final fieldKey = field.key;
-    final children = labelDisplay
-        ? <Widget>[
-            SizedBox(
-              child: Text(
-                isRequired ? "$fieldLabel*" : "$fieldLabel",
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-            ),
-          ]
-        : <Widget>[];
+  // Widget buildFieldText(MapEntry<String, dynamic> field, String parentKey,
+  //     {bool labelDisplay = true}) {
+  //   // print("$parentKey-${field.key} \n");
+  //   final fieldData = field.value as Map<String, dynamic>;
+  //   // if (fieldData.containsKey("OptionViewName")) {
+  //   //   // print(fieldData);
+  //   //   String refKey = "$parentKey-${fieldData['OptionViewName']['RefKey']}";
+  //   //   // fieldData.remove("Name");
+  //   //   fieldData.remove("OptionViewName");
+  //   //   widget.formController.dialogViewController
+  //   //       .setDialogForm(fieldData, refKey);
+  //   //   // widget.formController.setTextController(
+  //   //   //     '$parentKey-${field.key}', TextEditingController());
+  //   //   return Container();
+  //   // }
 
-    switch (fieldType.toLowerCase()) {
-      case 'dropdown':
-        widget.formController.setTextController(
-            '$parentKey-$fieldKey', TextEditingController(),
-            tableName: fieldDbTable,
-            columnName: fieldDbColumn,
-            refKey: dbRefKey);
-        final options = List<String>.from(fieldData['Options'] as List);
-        return Center(
-          child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              ...children,
-              DropdownBox(
-                dropdownOpt: options,
-                dbTableName: fieldDbTable,
-                dbColumnName: fieldDbColumn,
-                refKey: dbRefKey,
-                controller: widget.formController
-                    .getTextController('$parentKey-$fieldKey'),
-                processAutoFill: (refKey, value) {
-                  widget.formController.processAutoFill(refKey, value);
-                },
-              ),
-            ],
-          ),
-        );
-      case 'number':
-        widget.formController.setTextController(
-            '$parentKey-$fieldKey', TextEditingController(),
-            tableName: fieldDbTable,
-            columnName: fieldDbColumn,
-            refKey: dbRefKey);
-        return Center(
-          child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            children: [
-              ...children,
-              InputBoxOpt(
-                label: fieldLabel,
-                unit: fieldData['Unit'],
-                typeInput: 'number',
-                controller: widget.formController
-                    .getTextController('$parentKey-$fieldKey'),
-              ),
-            ],
-          ),
-        );
-      case 'text':
-        widget.formController.setTextController(
-            '$parentKey-$fieldKey', TextEditingController(),
-            tableName: fieldDbTable,
-            columnName: fieldDbColumn,
-            refKey: dbRefKey);
-        return Center(
-          child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            children: [
-              ...children,
-              InputBoxOpt(
-                label: fieldLabel,
-                unit: '',
-                typeInput: 'text',
-                controller: widget.formController
-                    .getTextController('$parentKey-$fieldKey'),
-              ),
-            ],
-          ),
-        );
-      case 'comment':
-        widget.formController
-            .setTextController('$parentKey-$fieldKey', TextEditingController());
-        return TextField(
-          maxLines: null,
-          // expands: true,
-          keyboardType: TextInputType.multiline,
-          textAlign: TextAlign.start,
-          controller:
-              widget.formController.getTextController('$parentKey-$fieldKey'),
-          decoration: InputDecoration(
-            border: const OutlineInputBorder(borderSide: BorderSide.none),
-            alignLabelWithHint: true,
-            labelText: labelDisplay ? fieldLabel : "",
-            labelStyle: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
-          ),
-        );
-      case 'date':
-        widget.formController
-            .setDateValue('$parentKey-$fieldKey', DateTime.now());
-        return Center(
-          child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            children: [
-              ...children,
-              DatePickerExample(
-                restorationId: 'main',
-                onDateChanged: (newDate) {
-                  widget.formController
-                      .setDateValue('$parentKey-$fieldKey', newDate!);
-                },
-              ),
-            ],
-          ),
-        );
-      case 'checkbox':
-        widget.formController.setCheckBoxValue('$parentKey-$fieldKey', false);
-
-        return Center(
-          child: CheckBoxOpt(
-            titleTxt: labelDisplay ? fieldLabel : "",
-            onChanged: (value) {
-              widget.formController
-                  .setCheckBoxValue('$parentKey-$fieldKey', value);
-            },
-          ),
-        );
-      case 'images':
-        bool isMultiImg = false;
-        widget.formController
-            .setImageListController('$parentKey-$fieldKey', []);
-        if (fieldData['Unit'] != null && fieldData['Unit'] == "Multi") {
-          isMultiImg = true;
-        }
-        return Center(
-          child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
-            children: [
-              ...children,
-              PhotoUploadOpt(
-                images: widget.formController
-                    .imageListControllers['$parentKey-$fieldKey']!,
-                multiImg: isMultiImg,
-              )
-            ],
-          ),
-        );
-
-      default:
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return Scaffold(
-                appBar: AppBar(
-                  title: const Text('Error'),
-                ),
-                body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Error: Unknown field type',
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        'Information: \n Code: #101 \n in $parentKey-$fieldKey',
-                        style: const TextStyle(fontSize: 18),
-                        textAlign: TextAlign.center,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context)
-                              .popUntil((route) => route.isFirst);
-                        },
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ).then((_) {
-            // Ensure we pop back to the main screen if the dialog is closed by any means
-            Navigator.of(context).popUntil((route) => route.isFirst);
-          });
-        });
-        return Container();
-    }
-  }
-
-/* ******************Section Process******************* */
-/*
-Tabel View
-- field: Table Section data.
-- parentKey: Section Name(Title).
-- tableInfo: Table Information{
-              expandable: is this table can add row by user. 
-              tableIndex: Defualt table index
-              }.
- */
-  Widget buildTableView(Map<String, dynamic> field, String parentKey,
-      Map<String, dynamic> tableInfo) {
-    final headers = <Widget>[
-      // index column
-      Container(),
-    ];
-    final expandable = tableInfo['Expandable'];
-    final tableIndex = tableInfo['tableIndex'];
-
-    // Table Column Headers
-    headers.addAll(field.entries.map((entry) {
-      if (entry.value is Map<String, dynamic> &&
-          entry.value.containsKey('Label')) {
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            entry.value['Label'],
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-        );
-      }
-      return const Text('');
-    }).toList());
-
-    // Table Rows by index
-    final tableRows = <TableRow>[TableRow(children: headers)];
-    for (int i = 0; i < rows.length; i++) {
-      final inputs = <Widget>[
-        Text(
-          tableIndex.length == 0 ? '${i + 1}' : tableIndex[i],
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
-          // softWrap: false,
-        ),
-      ];
-      inputs.addAll(rows[i].entries.map((entry) {
-        if (entry.value is Map<String, dynamic> &&
-            entry.value.containsKey('Label')) {
-          var keyIndex = i.toString();
-          if (tableIndex.length >= 1) {
-            keyIndex = tableIndex[i];
-          }
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: buildFieldText(
-                MapEntry(entry.key, entry.value), '$parentKey-$keyIndex',
-                labelDisplay: false),
-          );
-        }
-        return const Text("Unknown Field Type");
-      }).toList());
-      tableRows.add(TableRow(children: inputs));
-    }
-    return SingleChildScrollView(
-        child: Column(
-      children: [
-        Table(
-          border: TableBorder.all(),
-          columnWidths: const <int, TableColumnWidth>{
-            0: FixedColumnWidth(50),
-          },
-          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-          children: tableRows,
-        ),
-        expandable
-            ? InkWell(
-                onTap: () {
-                  addTableRow();
-                },
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add,
-                    ),
-                    Text(' Add Row',
-                        style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontSize: 18,
-                            color: Colors.blueAccent,
-                            fontWeight: FontWeight.bold)),
-                  ],
-                ))
-            : Container(),
-      ],
-    ));
-  }
-
-/*
-Form View: Generate View.
-- field: Section data.
-- parentKey: Section Name(Title).
-- widthSize: app window size, inheritance from build(MediaQuery.of(context).size.width)
- */
-  Widget buildFormView(
-      Map<String, dynamic> field, String parentKey, double widthSize) {
-    final widgets = <Widget>[];
-    for (int i = 0; i < field.entries.length; i += 2) {
-      final children = <Widget>[];
-      final firstField = field.entries.elementAt(i);
-      if (firstField.value['Type'] == 'Comment') {
-        children.add(SizedBox(
-            width: widthSize * 0.85,
-            height: 200,
-            child: buildFieldText(firstField, parentKey)));
-      } else {
-        children.add(
-            buildContainer(buildFieldText(firstField, parentKey), widthSize));
-        if (i + 1 < field.entries.length &&
-            field.entries.elementAt(i + 1).value['Type'] != 'Comment') {
-          children.add(buildContainer(
-              buildFieldText(field.entries.elementAt(i + 1), parentKey),
-              widthSize));
-        } else {
-          i--;
-          children.add(buildContainer(const Text(""), widthSize));
-          // children.add(
-          //   Container(
-          //     padding: const EdgeInsets.all(10.0),
-          //     margin: const EdgeInsets.all(10.0),
-          //     width: widthSize * 0.4,
-          //     alignment: Alignment.centerLeft,
-          //   ),
-          // );
-        }
-      }
-
-      widgets.add(
-        Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: const BoxDecoration(
-            border: Border(top: BorderSide(color: Colors.grey, width: 1.0)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: children,
-          ),
-        ),
-      );
-    }
-    return Column(children: widgets);
-  }
-
-  List<Widget> viewControlle(dynamic sectionView, Map<String, dynamic> data,
+  List<Widget> viewControl(dynamic sectionView, Map<String, dynamic> data,
       double widthSize, String parentKey) {
     final view = <Widget>[];
     if (sectionView == null) {
@@ -461,26 +53,45 @@ Form View: Generate View.
     }
 
     if (sectionView == "TableView") {
-      final Map<String, dynamic> tableInfo = {
-        'Expandable': data['Name']['Expandable'],
-        'tableIndex': data['Name']['tableIndex']
-      };
-      data.remove('Name');
-      view.add(
-          // SizedBox(
-          //     width: widthSize * 0.85,
-          //     child:
-          buildTableView(data, parentKey, tableInfo)
-          // )
-          );
+      view.add(BuildTableView(
+        field: data,
+        parentKey: parentKey,
+        formController: widget.formController,
+      ));
     } else if (sectionView == "FormView") {
+      // General View
       data.remove('Name');
-      view.add(buildFormView(data, parentKey, widthSize));
+      view.add(BuildFormView(
+          field: data,
+          parentKey: parentKey,
+          formController: widget.formController,
+          widthSize: widthSize));
     } else if (sectionView == "Images") {
+      // General View
       widget.formController.setImageListController(parentKey, []);
       view.add(PhotoUploadOpt(
         images: widget.formController.imageListControllers[parentKey]!,
       ));
+    } else if (sectionView == "SubFormView") {
+      // special View
+      data.remove('Name');
+      // view.add(Text(data.toString()));
+      for (var entry in data.entries) {
+        view.add(EntryContainer(
+          entry: MapEntry(entry.key, entry.value),
+          formController: widget.formController,
+        ));
+      }
+    } else if (sectionView == "OptionView") {
+      try {
+        view.add(DialogViewWidget(
+          data: data,
+          widthSize: widthSize,
+          formController: widget.formController,
+        ));
+      } catch (e) {
+        view.add(Text("Error: $e"));
+      }
     } else {}
     return view;
   }
@@ -495,13 +106,13 @@ Form View: Generate View.
     final subTitle = data['Name']?['Label'] ?? "";
     final alert = data['Name']?['Alert'] ?? "";
     final hint = data['Name']?['Hint'] ?? "";
+    final sectionView = data['Name']['SectionView'];
     final widgets = <Widget>[];
 
     try {
-      final sectionView = data['Name']['SectionView'];
       final widthSize = MediaQuery.of(context).size.width;
       final parentKey = widget.entry.key;
-      widgets.addAll(viewControlle(sectionView, data, widthSize, parentKey));
+      widgets.addAll(viewControl(sectionView, data, widthSize, parentKey));
     } catch (e) {
       widgets.add(Text("Error: $e"));
       return widgets[0];

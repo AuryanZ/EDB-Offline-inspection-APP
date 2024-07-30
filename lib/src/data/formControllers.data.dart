@@ -1,9 +1,9 @@
 import 'dart:collection';
 import 'dart:io';
 
+import 'package:app/src/data/dialogViewControllers.data.dart';
 import 'package:app/src/services/autFillDB.services.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 class FormControllers {
@@ -14,7 +14,9 @@ class FormControllers {
   final List<Map<String, dynamic>> autoFillControllers = [];
   final List<File> imageList = [];
   final Map<String, List<File>> imageListControllers = {};
+  final DialogViewController _dialogViewController = DialogViewController();
 
+  get getDialogViewKeys => validateDialogViewController();
   FormControllers();
   void dispose() {
     textControllers.clear();
@@ -23,6 +25,7 @@ class FormControllers {
     autoFillControllers.clear();
     imageList.clear();
     imageListControllers.clear();
+    _dialogViewController.dispose();
   }
 
   void _addAutoFillController(String tableName, String columnName,
@@ -80,10 +83,18 @@ class FormControllers {
     }
   }
 
-  void setTextController(String key, TextEditingController value,
-      {String? tableName, String? columnName, String? refKey}) {
+  void setTextController(
+    String key,
+    TextEditingController value, {
+    String? tableName,
+    String? columnName,
+    String? refKey,
+  }) {
     if (textControllers[key] == null) {
       textControllers[key] = value;
+      // if (isOptionView) {
+      //   dialogViewController.setDialogViewKeys(key);
+      // }
       tableName != null && columnName != null && refKey != null
           ? _addAutoFillController(tableName, columnName, refKey, key, 'Text')
           : null;
@@ -211,5 +222,41 @@ class FormControllers {
     });
 
     return finalData;
+  }
+
+  bool validateDialogViewController() {
+    bool isValid = true;
+    List<String> keys = _dialogViewController.getDialogViewKeys();
+    if (keys.isEmpty) {
+      return false;
+    }
+    for (var key in keys) {
+      if (textControllers[key]!.text.isEmpty) {
+        return false;
+      } else {
+        isValid = true;
+      }
+    }
+    return isValid;
+  }
+
+  Map<String, dynamic> _getDialogKeysValues() {
+    Map<String, dynamic> keysValues = {};
+    List<String> keys = _dialogViewController.getDialogViewKeys();
+    for (var key in keys) {
+      keysValues[key] = textControllers[key]!.text;
+    }
+    return keysValues;
+  }
+
+  Map<String, dynamic> getDialogMap() {
+    Map<String, dynamic> keysValues = _getDialogKeysValues();
+    String refKey = _dialogViewController.getDialogRefwKey();
+    String refValue = keysValues[refKey];
+    // Map<String, dynamic> dialogForm = {};
+    // dialogForm[refValue] = dialogViewController.getDialogFormByKey(refValue);
+    // print("${dialogViewController.getDialogFormByKey(refValue)}");
+    // return dialogForm;
+    return _dialogViewController.getDialogFormByKey(refValue);
   }
 }
