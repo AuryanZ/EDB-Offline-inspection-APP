@@ -68,7 +68,9 @@ class _DropdownBoxState extends State<DropdownBox> {
             width: MediaQuery.of(context).size.width * 0.4,
             child: TypeAheadField<String>(
               controller: controller,
+              autoFlipDirection: true,
               builder: (context, controller, focusNode) => TextField(
+                  onTap: () => controller.clear(),
                   controller: controller,
                   style: const TextStyle(fontSize: 20),
                   focusNode: focusNode,

@@ -4,14 +4,28 @@ import 'package:app/src/screens/inspection.screen.dart';
 import 'package:app/src/widgets/home/sideManue/zoneSub_title.widget.dart';
 import 'package:flutter/material.dart';
 
-class InspectionSelection extends StatelessWidget {
+class InspectionSelection extends StatefulWidget {
   const InspectionSelection({super.key});
+
+  @override
+  State<InspectionSelection> createState() => _InspectionSelectionState();
+}
+
+class _InspectionSelectionState extends State<InspectionSelection> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final ScrollController scrollController = ScrollController();
-    final Templates template = Templates();
-
+    Templates template = Templates();
     return FutureBuilder(
       future: template.setInspectionNames(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {

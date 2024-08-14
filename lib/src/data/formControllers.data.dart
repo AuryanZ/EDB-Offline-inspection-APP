@@ -14,10 +14,12 @@ class FormControllers {
   final List<Map<String, dynamic>> autoFillControllers = [];
   final List<File> imageList = [];
   final Map<String, List<File>> imageListControllers = {};
-  final DialogViewController _dialogViewController = DialogViewController();
+  final Map<String, DialogViewController> _dialogViewController = {};
+  // set getDialogViewKeys(String key) => validateDialogViewController(key);
 
-  get getDialogViewKeys => validateDialogViewController();
+  // get getDialogViewKeys => validateDialogViewController(key);
   FormControllers();
+
   void dispose() {
     textControllers.clear();
     dateValues.clear();
@@ -25,7 +27,7 @@ class FormControllers {
     autoFillControllers.clear();
     imageList.clear();
     imageListControllers.clear();
-    _dialogViewController.dispose();
+    _dialogViewController.clear();
   }
 
   void _addAutoFillController(String tableName, String columnName,
@@ -92,9 +94,6 @@ class FormControllers {
   }) {
     if (textControllers[key] == null) {
       textControllers[key] = value;
-      // if (isOptionView) {
-      //   dialogViewController.setDialogViewKeys(key);
-      // }
       tableName != null && columnName != null && refKey != null
           ? _addAutoFillController(tableName, columnName, refKey, key, 'Text')
           : null;
@@ -188,6 +187,8 @@ class FormControllers {
     data.addAll(dateValues);
     data.addAll(checkBoxValues);
     data.addAll(imageListControllers);
+    // data.addAll(_dialogViewController.dialogSelections
+    //     .map((key, value) => MapEntry(key, value.text)));
     Map<String, dynamic> sortedData = SplayTreeMap<String, dynamic>.from(data);
 
     Map<String, dynamic> finalData = {};
@@ -224,39 +225,127 @@ class FormControllers {
     return finalData;
   }
 
-  bool validateDialogViewController() {
+  void addDialogViewController(String dialogViewControllerKey) {
+    if (_dialogViewController[dialogViewControllerKey] == null) {
+      _dialogViewController[dialogViewControllerKey] = DialogViewController();
+    }
+  }
+
+  bool validateDialogViewController(String dialogViewControllerKey) {
     bool isValid = true;
-    List<String> keys = _dialogViewController.getDialogViewKeys();
-    if (keys.isEmpty) {
-      return false;
-    }
-    for (var key in keys) {
-      if (textControllers[key]!.text.isEmpty) {
-        return false;
-      } else {
-        isValid = true;
+    _dialogViewController[dialogViewControllerKey]
+        ?.dialogSelections
+        .forEach((key, value) {
+      if (value.text.isEmpty) {
+        isValid = false;
       }
-    }
+    });
     return isValid;
   }
 
-  Map<String, dynamic> _getDialogKeysValues() {
-    Map<String, dynamic> keysValues = {};
-    List<String> keys = _dialogViewController.getDialogViewKeys();
-    for (var key in keys) {
-      keysValues[key] = textControllers[key]!.text;
+  Map<String, dynamic>? getDialogMap(String dialogViewControllerKey) {
+    String refKey =
+        _dialogViewController[dialogViewControllerKey]!.getDialogRefwKey();
+    String? refValue = _dialogViewController[dialogViewControllerKey]
+        ?.dialogSelections[refKey]!
+        .text;
+
+    if (refValue == null) {
+      return {};
     }
-    return keysValues;
+
+    return _dialogViewController[dialogViewControllerKey]
+        ?.getDialogFormByKey(refValue);
   }
 
-  Map<String, dynamic> getDialogMap() {
-    Map<String, dynamic> keysValues = _getDialogKeysValues();
-    String refKey = _dialogViewController.getDialogRefwKey();
-    String refValue = keysValues[refKey];
-    // Map<String, dynamic> dialogForm = {};
-    // dialogForm[refValue] = dialogViewController.getDialogFormByKey(refValue);
-    // print("${dialogViewController.getDialogFormByKey(refValue)}");
-    // return dialogForm;
-    return _dialogViewController.getDialogFormByKey(refValue);
+  void setDialogForm(Map<String, dynamic> dialogForm, String dialogRefwKey,
+      String dialogViewControllerKey) {
+    try {
+      _dialogViewController[dialogViewControllerKey]!
+          .setDialogForm(dialogForm, dialogRefwKey);
+    } catch (e) {
+      // print(e);
+      throw FormatException("Error: \n $e");
+    }
+  }
+
+  void setDialogSelections(
+      String selectionKey, String dialogViewControllerKey) {
+    try {
+      _dialogViewController[dialogViewControllerKey]!
+          .setDialogSelections(selectionKey);
+    } catch (e) {
+      throw FormatException("Error: \n $e");
+    }
+  }
+
+  TextEditingController getDialogSelections(
+      String selectionKey, String dialogViewControllerKey) {
+    try {
+      return _dialogViewController[dialogViewControllerKey]!
+          .dialogSelections[selectionKey]!;
+    } catch (e) {
+      throw FormatException("Error: \n $e");
+    }
+  }
+
+  TextEditingController getDisplayController(String dialogViewControllerKey) {
+    try {
+      return _dialogViewController[dialogViewControllerKey]!.displayController;
+    } catch (e) {
+      throw FormatException("Error: \n $e");
+    }
+  }
+
+  void updateDisplayController(
+      Map<String, dynamic> data, String dialogViewControllerKey) {
+    try {
+      String dialogIndex =
+          _dialogViewController[dialogViewControllerKey]!.getIndex();
+      Map<String, dynamic> tempData =
+          _dialogViewController[dialogViewControllerKey]!.dialogSelections;
+
+      tempData.forEach((key, value) {
+        setTextController("$dialogViewControllerKey-$dialogIndex-$key",
+            TextEditingController());
+        setTextControllerValue("$dialogViewControllerKey-$dialogIndex-$key",
+            value.text.toString());
+
+        _dialogViewController[dialogViewControllerKey]!
+            .updateDisplayController("${value.text} ");
+      });
+
+      // print(data);
+      _dialogViewController[dialogViewControllerKey]!
+          .updateDisplayController("(");
+      data.forEach((key, value) {
+        // check if value is a map
+
+        if (value is Map) {
+          value.forEach((key2, value2) {
+            setTextController("$dialogViewControllerKey-$dialogIndex-$key2",
+                TextEditingController());
+            setTextControllerValue(
+                "$dialogViewControllerKey-$dialogIndex-$key2",
+                value2.toString());
+            _dialogViewController[dialogViewControllerKey]!
+                .updateDisplayController("$key2: $value2 ; ");
+          });
+        } else {
+          setTextController("$dialogViewControllerKey-$dialogIndex-$key",
+              TextEditingController());
+          setTextControllerValue(
+              "$dialogViewControllerKey-$dialogIndex-$key", value.toString());
+          _dialogViewController[dialogViewControllerKey]!
+              .updateDisplayController("$key: $value ;\n ");
+        }
+      });
+
+      _dialogViewController[dialogViewControllerKey]!
+          .updateDisplayController(")\n");
+      _dialogViewController[dialogViewControllerKey]!.addIndex();
+    } catch (e) {
+      throw FormatException("Error: \n $e");
+    }
   }
 }

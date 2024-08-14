@@ -1,42 +1,31 @@
 import 'package:app/src/data/formControllers.data.dart';
+import 'package:app/src/widgets/inspection/build_views/form_view_opt.widget.dart';
+import 'package:app/src/widgets/inspection/components/drop_down_opt.widget.dart';
 import 'package:flutter/material.dart';
 
-class DialogViewWidget extends StatefulWidget {
+class DialogViewWidget extends StatelessWidget {
   const DialogViewWidget(
       {super.key,
       required this.data,
       required this.widthSize,
+      required this.parentKey,
       required this.formController});
 
   final Map<String, dynamic> data;
   final double widthSize;
+  final String parentKey;
   final FormControllers formController;
-
-  @override
-  State<DialogViewWidget> createState() => _DialogViewWidget();
-}
-
-class _DialogViewWidget extends State<DialogViewWidget> {
-  Map<String, dynamic> data = {};
-  double widthSize = 0.0;
-
-  @override
-  void initState() {
-    super.initState();
-    data = widget.data;
-    widthSize = widget.widthSize;
-  }
 
   Future<void> showOptionViewDialog(
       BuildContext context, String title, double widthSize) {
-    if (!widget.formController.validateDialogViewController() ||
-        widget.formController.getDialogMap().isEmpty) {
+    if (!formController.validateDialogViewController(parentKey) ||
+        formController.getDialogMap(parentKey)!.isEmpty) {
       return showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text(''),
-            content: widget.formController.validateDialogViewController()
+            content: formController.validateDialogViewController(parentKey)
                 ? const Text('No data error')
                 : const Text("Please fill all required fields."),
             actions: [
@@ -52,9 +41,31 @@ class _DialogViewWidget extends State<DialogViewWidget> {
       );
     }
 
-    Map<String, dynamic> dialogData = widget.formController.getDialogMap();
+    Map<String, dynamic>? dialogData = formController.getDialogMap(parentKey);
+    if (dialogData == null) {
+      return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(''),
+            content: const Text('No data error'),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+    // print(dialogData);
     dialogData.remove('Name');
     // print("dialogData $dialogData");
+    // need make controller intergrate with formController
+    FormControllers tempController = FormControllers();
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -62,21 +73,25 @@ class _DialogViewWidget extends State<DialogViewWidget> {
           title: Text(title),
           content: SizedBox(
               width: widthSize * 0.85,
-              // height: 200,
-              // child: buildFormView(dialogData, "", widthSize * 0.85)),
-              child: const Text("aaaa")),
+              child: BuildFormView(
+                  field: dialogData,
+                  parentKey: parentKey,
+                  formController: tempController,
+                  widthSize: widthSize * 0.85)),
           actions: [
             ElevatedButton(
+              child: const Text("Cancel"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text("Cancel"),
             ),
             ElevatedButton(
+              child: const Text("Add"),
               onPressed: () {
+                formController.updateDisplayController(
+                    tempController.getControllersValue(), parentKey);
                 Navigator.of(context).pop();
               },
-              child: const Text("Add"),
             ),
           ],
         );
@@ -86,15 +101,51 @@ class _DialogViewWidget extends State<DialogViewWidget> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController displayController = TextEditingController();
     final dialogView = <Widget>[];
     String dialogTitle = data['Name']?["Label"] ?? "";
     data.remove('Name');
-    for (int i = 0; i < data.length; i++) {
-      final key = data.keys.elementAt(i);
-      final value = data[key];
-      // print("key: $key, value: $value");
-    }
+    formController.addDialogViewController(parentKey);
+    dialogView.addAll(
+      data.entries.map((entry) {
+        final tempFieldData = entry.value as Map<String, dynamic>;
+        if (tempFieldData.containsKey("OptionViewName")) {
+          String refKey = "${tempFieldData['OptionViewName']['RefKey']}";
+          // formController.setDialogForm(tempFieldData, refKey, parentKey);
+          formController.setDialogForm(tempFieldData, refKey, parentKey);
+          // stop loop
+          return Container();
+        }
+        formController.setDialogSelections(entry.key, parentKey);
+        // print("entry: $entry");
+        try {
+          List<String> options = List<String>.from(tempFieldData['Options']);
+          return Container(
+            padding: const EdgeInsets.all(8.0),
+            margin: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: widthSize * 0.4,
+              child: Column(
+                children: [
+                  Text(
+                    tempFieldData['Label'],
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  DropdownBox(
+                      dropdownOpt: options,
+                      controller: formController.getDialogSelections(
+                          entry.key, parentKey))
+                ],
+              ),
+            ),
+          );
+        } catch (e) {
+          return Text("Error $e");
+        }
+      }),
+    );
     // print(data);
 
     dialogView.add(ElevatedButton(
@@ -118,7 +169,7 @@ class _DialogViewWidget extends State<DialogViewWidget> {
               readOnly: true,
               keyboardType: TextInputType.multiline,
               textAlign: TextAlign.start,
-              controller: displayController,
+              controller: formController.getDisplayController(parentKey),
               decoration: const InputDecoration(
                 border: OutlineInputBorder(borderSide: BorderSide.none),
                 alignLabelWithHint: true,

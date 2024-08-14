@@ -44,7 +44,10 @@ class BuildFields extends StatelessWidget {
         : <Widget>[];
     switch (fieldType.toLowerCase()) {
       case 'dropdown':
-        // case 'dialogview':
+      case 'dialogview':
+        // if (fieldType.toLowerCase() == 'dialogview') {
+        //   formController.setDialogViewKeys('$parentKey-$fieldKey');
+        // }
         formController.setTextController(
             '$parentKey-$fieldKey', TextEditingController(),
             tableName: fieldDbTable,

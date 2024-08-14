@@ -112,51 +112,90 @@ class Templates {
   }
 
   Map<String, dynamic> _processSaveData(
-      Map<String, dynamic> data, Map<String, dynamic> inspectionForm) {
+      Map<String, dynamic> inputData, Map<String, dynamic> inspectionForm) {
     // Map<String, dynamic> data = formController.getControllersValue();
-    Map<String, dynamic> saveData = {};
+    // print("data: $data");
+    Map<String, dynamic> resultData = {};
 
-    inspectionForm.forEach((key, value) {
-      if (key != "Name") {
-        if (saveData[key] == null) {
-          saveData[key] = Map<String, dynamic>.from({
+    inspectionForm.forEach((formSectionName, formSectionValue) {
+      if (formSectionName != "Name") {
+        if (resultData[formSectionName] == null) {
+          resultData[formSectionName] = Map<String, dynamic>.from({
             "data info": {
-              "Label": value["Name"]["Label"],
-              "SectionView": value["Name"]["SectionView"],
-              "TableIndex": value["Name"]["SectionView"] == "TableView"
-                  ? data[key]["formIndex"]
-                  : "",
+              "Label": formSectionValue["Name"]["Label"],
+              "SectionView": formSectionValue["Name"]["SectionView"],
+              "TableIndex":
+                  formSectionValue["Name"]["SectionView"] == "TableView"
+                      ? inputData[formSectionName]["formIndex"]
+                      : "",
             }
           });
         }
-        if (value["Name"]?["SectionView"] == "TableView") {
-          data[key]["formIndex"].forEach((index) {
-            saveData[key]["$index"] = {};
-            value.forEach((key2, value2) {
-              if (key2 != "Name") {
-                saveData[key]["$index"][key2] = data[key]["$key2-$index"];
+        if (formSectionValue["Name"]?["SectionView"] == "TableView") {
+          inputData[formSectionName]["formIndex"].forEach((tableIndex) {
+            resultData[formSectionName]["$tableIndex"] = {};
+            formSectionValue.forEach((taskName, taskValue) {
+              if (taskName != "Name") {
+                resultData[formSectionName]["$tableIndex"][taskName] =
+                    inputData[formSectionName]["$taskName-$tableIndex"];
               }
             });
           });
-        } else if (value["Name"]["SectionView"] == "SubFormView") {
-          saveData[key].addAll(_processSaveData(data, value));
+        } else if (formSectionValue["Name"]["SectionView"] == "SubFormView") {
+          // print("key: $key , value: $value");
+          resultData[formSectionName]
+              .addAll(_processSaveData(inputData, formSectionValue));
+        } else if (formSectionValue["Name"]["SectionView"] == "OptionView") {
+          // print("key: $key , value: $value");
+          inputData[formSectionName]["formIndex"].forEach((index) {
+            resultData[formSectionName]["$index"] = {};
+            formSectionValue.forEach((taskName, taskValue) {
+              if (taskValue.containsKey("OptionViewName")) {
+                // get [OptionViewName][RefKey] value
+                String refKey = taskValue['OptionViewName']['RefKey'];
+                String optViewKey =
+                    resultData[formSectionName]["$index"][refKey];
+                // print("refKey: $refKey");
+                // print("key: $optViewKey");
+                // print("taskValue: ${taskValue[optViewKey]}");
+                taskValue[optViewKey].forEach((key3, value3) {
+                  // ignore OptionViewName section
+                  if (key3 != "Name") {
+                    resultData[formSectionName]["$index"][key3] =
+                        inputData[formSectionName]["$key3-$index"];
+                  }
+                });
+              } else {
+                if (taskName != "Name") {
+                  resultData[formSectionName]["$index"][taskName] =
+                      inputData[formSectionName]["$taskName-$index"];
+                }
+              }
+            });
+          });
         } else {
-          value.forEach((key2, value2) {
-            if (key2 != "Name") {
-              saveData[key][key2] = data[key][key2];
+          formSectionValue.forEach((taskName, taskValue) {
+            if (taskName != "Name") {
+              resultData[formSectionName][taskName] =
+                  inputData[formSectionName][taskName];
             }
           });
         }
       }
     });
 
-    return saveData;
+    return resultData;
   }
 
   Future<Map<String, dynamic>> saveInspection() async {
-    final Map<String, dynamic> saveData =
-        _processSaveData(formController.getControllersValue(), inspectionForm);
-
+    Map<String, dynamic> saveData;
+    try {
+      saveData = _processSaveData(
+          formController.getControllersValue(), inspectionForm);
+    } catch (e) {
+      return Map<String, dynamic>.from(
+          {"state": 400, "msg": Text("Error: $e")});
+    }
     List<String> fileNaming = namingConvention.split("-");
     String workNumber = "${saveData[fileNaming[0]][fileNaming[1]]}";
     String msg = "";

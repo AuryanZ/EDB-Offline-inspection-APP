@@ -30,20 +30,20 @@ class _EntryContainerState extends State<EntryContainer> {
 
 /* ******************Section Field******************* */
   // Widget buildFieldText(MapEntry<String, dynamic> field, String parentKey,
-  //     {bool labelDisplay = true}) {
-  //   // print("$parentKey-${field.key} \n");
-  //   final fieldData = field.value as Map<String, dynamic>;
-  //   // if (fieldData.containsKey("OptionViewName")) {
-  //   //   // print(fieldData);
-  //   //   String refKey = "$parentKey-${fieldData['OptionViewName']['RefKey']}";
-  //   //   // fieldData.remove("Name");
-  //   //   fieldData.remove("OptionViewName");
-  //   //   widget.formController.dialogViewController
-  //   //       .setDialogForm(fieldData, refKey);
-  //   //   // widget.formController.setTextController(
-  //   //   //     '$parentKey-${field.key}', TextEditingController());
-  //   //   return Container();
-  //   // }
+  // {bool labelDisplay = true}) {
+  // print("$parentKey-${field.key} \n");
+  // final fieldData = field.value as Map<String, dynamic>;
+  // if (fieldData.containsKey("OptionViewName")) {
+  //   // print(fieldData);
+  //   String refKey = "$parentKey-${fieldData['OptionViewName']['RefKey']}";
+  //   // fieldData.remove("Name");
+  //   fieldData.remove("OptionViewName");
+  //   widget.formController.dialogViewController
+  //       .setDialogForm(fieldData, refKey);
+  //   // widget.formController.setTextController(
+  //   //     '$parentKey-${field.key}', TextEditingController());
+  //   return Container();
+  // }
 
   List<Widget> viewControl(dynamic sectionView, Map<String, dynamic> data,
       double widthSize, String parentKey) {
@@ -83,10 +83,12 @@ class _EntryContainerState extends State<EntryContainer> {
         ));
       }
     } else if (sectionView == "OptionView") {
+      Map<String, dynamic> optionData = data;
       try {
         view.add(DialogViewWidget(
-          data: data,
+          data: optionData,
           widthSize: widthSize,
+          parentKey: parentKey,
           formController: widget.formController,
         ));
       } catch (e) {
