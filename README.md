@@ -1,6 +1,8 @@
 # app
 
-A new Flutter project.
+A Custmizable Inspection App
+- create template follow the Template Structure and save into assets
+- need install sqlit3.dll into build file
 
 ## Getting Started
 
